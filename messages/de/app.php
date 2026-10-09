@@ -466,4 +466,8 @@ return [
   'Please activate first in these projects: {plugins}.' => 'Bitte zuerst in diesen Projekten aktivieren: {plugins}.',
   'These plugins need it: {plugins}. Uninstall them first.' => 'Diese Plugins brauchen es: {plugins}. Bitte zuerst sie deinstallieren.',
   'These plugins need it there: {plugins}. Deactivate them first.' => 'Diese Plugins brauchen es dort: {plugins}. Bitte zuerst sie deaktivieren.',
+  'Please choose an event that is started by other events.' => 'Bitte wähle ein Event, das von anderen Events gestartet wird.',
+  'An event cannot start itself.' => 'Ein Event kann sich nicht selbst starten.',
+  '"{key}" must be an object.' => '„{key}“ muss ein Objekt sein.',
+  'Please enter the values as JSON object, e.g. {"title": "Test"}.' => 'Bitte gib die Werte als JSON-Objekt ein, z. B. {"title": "Test"}.',
 ];

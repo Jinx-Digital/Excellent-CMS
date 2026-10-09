@@ -24,6 +24,10 @@ also part of the demo data) and of the documentation on the website.
   [Search](docs/search.md), [Media](docs/media.md), [Events](docs/events.md), [Import](docs/import.md),
   [Users and permissions](docs/users-and-permissions.md), [Plugins](docs/plugins.md)
 - **For websites:** [Content API](docs/content-api.md) · [PHP SDK](docs/php-sdk.md)
+- **Knowledge base:** [Overview](docs/knowledge-base.md) - [Forms and messages](docs/forms-and-messages.md),
+  [Blog with author profiles](docs/blog-authors.md), [Multilingual pages](docs/multilingual-pages.md),
+  [Syncing a shop](docs/shop-sync.md), [Editorial review](docs/editorial-workflow.md),
+  [Shared data](docs/global-data.md), [Reusable event steps](docs/reusable-events.md)
 
 ## Quick start
 

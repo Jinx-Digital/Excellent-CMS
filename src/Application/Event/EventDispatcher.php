@@ -8,6 +8,7 @@ use App\Application\Content\RecordPresenter;
 use App\Domain\Schema\EntityDefinition;
 use App\Repository\EventRepository;
 use App\Shared\Id;
+use RuntimeException;
 
 /**
  * Collects the records events react to during one request: the condition is checked when the
@@ -22,8 +23,10 @@ use App\Shared\Id;
 final class EventDispatcher
 {
   public const ACTIONS = ['create', 'update', 'delete', 'publish', 'unpublish', 'restore'];
-  /** What an event listens to: records of an entity, the media or the variables of the project */
-  public const SOURCES = ['entity', 'media', 'variables'];
+  /** What an event listens to: records of an entity, the media, the variables of the project - or other events (step "event") */
+  public const SOURCES = ['entity', 'media', 'variables', 'event'];
+  /** The only action of events of the source "event": started by the step "event" of another event */
+  public const EXECUTE = 'execute';
   /** Actions of media (upload, rename / keep, delete) and variables (added, changed, removed) */
   public const DATA_ACTIONS = ['create', 'update', 'delete'];
   public const MAX_DEPTH = 3;
@@ -99,6 +102,31 @@ final class EventDispatcher
       $this->pending[(string)$event['id']] ??= ['event' => $event, 'records' => []];
       $this->pending[(string)$event['id']]['records'][] = ['id' => $id, 'entity' => $source, 'action' => $action, 'data' => $data, 'old' => $old];
     }
+  }
+
+  /**
+   * The step "event": the event (source "event") gets the records of the run - those its condition
+   * matches. It runs one level deeper, like events started by records the steps write.
+   *
+   * @param list<array> $records
+   * @return int how many records it got
+   * @throws RuntimeException within its own chain or too deep
+   */
+  public function execute(array $event, array $records): int
+  {
+    if (in_array((string)$event['id'], $this->origin, true)) {
+      throw new RuntimeException(sprintf('"%s" already runs in this chain - an event cannot start itself again.', (string)$event['name']));
+    }
+    if ($this->depth >= self::MAX_DEPTH) {
+      throw new RuntimeException(sprintf('"%s" is not started: events start each other at most %d levels deep.', (string)$event['name'], self::MAX_DEPTH));
+    }
+    $condition = null !== $event['condition'] ? json_decode((string)$event['condition'], true) : null;
+    $matching = array_values(array_filter($records, fn(array $record): bool => $this->conditions->matchesData(is_array($condition) ? $condition : null, (array)($record['data'] ?? []), $record['old'] ?? null)));
+    if ([] !== $matching) {
+      $this->pending[(string)$event['id']] ??= ['event' => $event, 'records' => []];
+      array_push($this->pending[(string)$event['id']]['records'], ...$matching);
+    }
+    return count($matching);
   }
 
   public function hasPending(): bool

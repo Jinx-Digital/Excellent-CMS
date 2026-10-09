@@ -12,14 +12,14 @@ const format = useFormat()
 const recipients = useRecipientUsers()
 
 const ACTIONS = ['create', 'update', 'delete', 'publish', 'unpublish', 'restore']
-// Media and variables have no drafts and no trash
-const SOURCES = ['entity', 'media', 'variables'] as const
+// Media and variables have no drafts and no trash; "event": started only by the step "event" of other events
+const SOURCES = ['entity', 'media', 'variables', 'event'] as const
 // "All" in selects (they need a value that is not empty)
 const ALL = '-'
 // Sources of plugins (e.g. form submissions): their actions, optionally limited to one target
 const pluginSources = (await useApi()<{ data: PluginEventSource[] }>('/admin/plugins/event-sources').catch(() => ({ data: [] }))).data
 const pluginSource = (source: string) => pluginSources.find(s => s.source === source)
-const actionsOf = (source: string) => source === 'entity' ? ACTIONS : pluginSource(source) ? Object.keys(pluginSource(source)!.actions) : ['create', 'update', 'delete']
+const actionsOf = (source: string) => source === 'entity' ? ACTIONS : source === 'event' ? ['execute'] : pluginSource(source) ? Object.keys(pluginSource(source)!.actions) : ['create', 'update', 'delete']
 const actionLabel = (source: string, action: string) => pluginSource(source)?.actions[action] ?? t(`events.actions.${action}`)
 const sourceItems = computed(() => [
   ...SOURCES.map(value => ({ value, label: t(`events.sources.${value}`) })),
@@ -45,22 +45,26 @@ const sourceName = (event: EventItem) => {
   return target ? `${plugin.label}: ${target}` : plugin.label
 }
 
-// Workflow: an event, its steps, and for steps that write records the events of that entity
+// Workflow: an event, its steps, and for steps that write records the events of that entity (the step
+// "event": the event it starts)
 interface Node { event: EventItem, children: { step: Record<string, unknown>, events: Node[] }[] }
 const WRITES: Record<string, string> = { create: 'create', update: 'update', delete: 'delete' }
+const startedBy = (step: Record<string, unknown>) => step.type === 'event'
+  ? events.value.filter(e => e.id === step.event)
+  : WRITES[String(step.type)] ? events.value.filter(e => e.entity === step.entity && e.actions.includes(WRITES[String(step.type)]!)) : []
 function node(event: EventItem, chain: string[]): Node {
   return {
     event,
     children: event.steps.map(step => ({
       step,
-      events: WRITES[String(step.type)] && chain.length < 3
-        ? events.value.filter(e => e.active && e.entity === step.entity && e.actions.includes(WRITES[String(step.type)]!) && !chain.includes(e.id)).map(e => node(e, [...chain, e.id]))
-        : []
+      events: chain.length < 3 ? startedBy(step).filter(e => e.active && !chain.includes(e.id)).map(e => node(e, [...chain, e.id])) : []
     }))
   }
 }
 // Roots: events no other event starts
-const started = computed(() => new Set(events.value.flatMap(e => e.steps.flatMap(step => WRITES[String(step.type)] ? events.value.filter(o => o.entity === step.entity && o.actions.includes(WRITES[String(step.type)]!)).map(o => o.id) : []))))
+const started = computed(() => new Set(events.value.flatMap(e => e.steps.flatMap(step => startedBy(step).map(o => o.id)))))
+// Events the step "event" can start (not the one being edited)
+const executable = computed(() => events.value.filter(e => e.source === 'event' && e.id !== editing.value?.id).map(e => ({ value: e.id, label: e.name })))
 const workflow = computed(() => {
   const roots = events.value.filter(e => !started.value.has(e.id)).map(e => node(e, [e.id]))
   // Events that only start each other (A → B → A) have no start - they become one of their own
@@ -84,6 +88,7 @@ const stepDetail = (step: Record<string, unknown>) => {
   const type = String(step.type)
   if (type === 'webhook') return `${step.url}${step.digest === false ? ` · ${t('events.perRecord')}` : ''}`
   if (type === 'email') return `${recipients.list(step.to).map(recipients.label).join(', ')}${step.digest ? ` · ${t('events.digest')}` : ''}`
+  if (type === 'event') return events.value.find(e => e.id === step.event)?.name ?? String(step.event ?? '')
   return entityName(String(step.entity ?? ''))
 }
 
@@ -94,7 +99,7 @@ const form = reactive({ name: '', source: 'entity' as EventItem['source'], entit
 // Another source: actions it does not have go away
 watch(() => form.source, (source, before) => {
   form.actions = form.actions.filter(a => actionsOf(source).includes(a))
-  if (before !== undefined && !form.actions.length && pluginSource(source)) form.actions = actionsOf(source).slice(0, 1)
+  if (before !== undefined && !form.actions.length && (pluginSource(source) || source === 'event')) form.actions = actionsOf(source).slice(0, 1)
   if (before !== undefined && source !== editing.value?.source) form.target = ''
 })
 // Author of the record (events of entities): created or last changed by these users - kept in the condition
@@ -259,7 +264,8 @@ const percent = (run: EventRun) => {
           <UFormField v-else-if="pluginSource(form.source)?.targets" :label="pluginSource(form.source)!.target_label || $t('events.target')" :error="errors.target">
             <USelect :model-value="form.target || ALL" :items="[{ value: ALL, label: $t('events.allTargets') }, ...pluginSource(form.source)!.targets!.map(item => ({ value: item.value, label: item.label }))]" class="w-full sm:w-1/2" @update:model-value="form.target = $event === ALL ? '' : String($event)" />
           </UFormField>
-          <UFormField :label="$t('events.on')" :error="errors.actions" required>
+          <p v-if="form.source === 'event'" class="text-sm text-muted">{{ $t('events.executeOnly') }}</p>
+          <UFormField v-else :label="$t('events.on')" :error="errors.actions" required>
             <div class="flex flex-wrap gap-4">
               <UCheckbox v-for="action in actionsOf(form.source)" :id="`event-action-${action}`" :key="action" :model-value="form.actions.includes(action)" :label="actionLabel(form.source, action)" @update:model-value="form.actions = $event ? [...form.actions, action] : form.actions.filter(a => a !== action)" />
             </div>
@@ -280,11 +286,11 @@ const percent = (run: EventRun) => {
             <UTextarea v-model="form.condition" autoresize :rows="3" class="font-mono w-full" placeholder='{ "draft": false, "price": { "gte": 10 }, "_changed": ["price"] }' />
           </UFormField>
           <UFormField :label="$t('events.stepsLabel')" :help="$t('events.stepsHelp')" required>
-            <StepsEditor v-model="form.steps" :entities="entities" :source="form.source" :trigger="form.entity" :fields="pluginFields" :error="Array.isArray(errors.steps) ? errors.steps.join('\n') : errors.steps" />
+            <StepsEditor v-model="form.steps" :entities="entities" :source="form.source" :trigger="form.entity" :fields="pluginFields" :events="executable" :error="Array.isArray(errors.steps) ? errors.steps.join('\n') : errors.steps" />
           </UFormField>
           <div v-if="editing" class="rounded-md border border-default p-3 space-y-2">
             <div class="flex flex-wrap items-end gap-2">
-              <UFormField :label="$t('events.testRecord')" :help="pluginSource(form.source) ? $t('events.testWhichPlugin') : $t(`events.testWhich.${form.source}`)" class="flex-1"><UInput v-model="testRecord" :placeholder="form.source === 'variables' ? 'url' : 'ID'" class="font-mono w-full" /></UFormField>
+              <UFormField :label="$t('events.testRecord')" :help="pluginSource(form.source) ? $t('events.testWhichPlugin') : $t(`events.testWhich.${form.source}`)" class="flex-1"><UInput v-model="testRecord" :placeholder="form.source === 'variables' ? 'url' : form.source === 'event' ? '{}' : 'ID'" class="font-mono w-full" /></UFormField>
               <UButton icon="i-lucide-flask-conical" color="neutral" variant="outline" :loading="saving" :label="$t('events.test')" @click="test" />
             </div>
             <template v-if="testResult">

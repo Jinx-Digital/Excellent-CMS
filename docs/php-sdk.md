@@ -69,7 +69,8 @@ content API returns them as the whole path (`world/europe/western-europe`, per l
 `filter[slug]=world/europe` finds a record by its path. The admin app shows the slug of the record itself.
 
 **Filter operators:** `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `like`, `in`, `null`. Values are parsed like in the import,
-e.g. `filter[price][gte]=12,50` or `filter[date][lt]=29.10.2025`.
+e.g. `filter[price][gte]=12,50` or `filter[date][lt]=29.10.2025`. Fields of plugins take what their plugin accepts
+when saving (the user field: `<id>` or `user:<id>`). A value the plugin refuses matches nothing.
 
 **References in filters and sorting:** `filter[country]=<id>` matches the id of the referenced record. Fields of the
 referenced record work too, with the same operators and up to three levels deep. For example, `filter[country][name]=Germany`,

@@ -71,6 +71,10 @@ PHP;
     $live = $this->api('GET', "/main/content/{$slug}/{$record['id']}")['body']['data'];
     $this->assertSame('abc', $live['pick']['code']);
     $this->assertSame(['Eins'], array_column($this->api('GET', "/main/content/{$slug}?s=codeabc")['body']['data'], 'title'));
+    // Filters convert the value like the plugin (here: refused) - it matches nothing instead of failing
+    $filtered = $this->api('GET', "/main/content/{$slug}?filter[pick]=nope");
+    $this->assertSame([200, []], [$filtered['status'], $filtered['body']['data'] ?? null], json_encode($filtered['body'], JSON_UNESCAPED_UNICODE));
+    $this->assertSame(['Eins'], array_column($this->api('GET', "/main/content/{$slug}?filter[pick][null]=false")['body']['data'], 'title'));
     $this->assertSame(409, $this->api('DELETE', "/media/{$file['id']}", token: $admin)['status']);
     // The public schema has no component
     $schema = array_column(array_column($this->api('GET', '/main/content')['body']['data'], null, 'slug')[$slug]['fields'], null, 'name')['pick'];

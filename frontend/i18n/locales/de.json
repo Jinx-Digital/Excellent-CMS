@@ -221,7 +221,8 @@
       "publish": "Veröffentlichen",
       "restore": "Wiederherstellen",
       "unpublish": "Zurück zu Entwurf",
-      "update": "Ändern"
+      "update": "Ändern",
+      "execute": "Gestartet"
     },
     "active": "Aktiv",
     "allTargets": "Alle",
@@ -268,7 +269,14 @@
       "where": "Welche Einträge",
       "whereHelp": "Filter: Feld = Wert, z. B. ID = {'{{'}record.product{'}}'}. Vergleiche als JSON, z. B. {'{'}\"gte\": 10{'}'}.",
       "continueOnError": "Bei Fehler weitermachen",
-      "continueOnErrorHelp": "Schlägt dieser Schritt fehl, laufen die nächsten trotzdem (der Lauf gilt als fehlgeschlagen, „Wiederholen“ wiederholt nur, was fehlte)."
+      "continueOnErrorHelp": "Schlägt dieser Schritt fehl, laufen die nächsten trotzdem (der Lauf gilt als fehlgeschlagen, „Wiederholen“ wiederholt nur, was fehlte).",
+      "event": "Event",
+      "eventHelp": "Events mit der Quelle „Von anderen Events gestartet“. Es bekommt die Datensätze dieses Laufs.",
+      "chooseEvent": "Event wählen",
+      "noExecutable": "Noch kein Event zum Starten – lege eins mit der Quelle „Von anderen Events gestartet“ an.",
+      "passData": "Zusätzliche Werte",
+      "passDataHelp": "Werden jedem Datensatz hinzugefügt – im gestarteten Event als {'{{'}record.<name>{'}}'}. Die Platzhalter dieses Events funktionieren hier.",
+      "valueName": "name"
     },
     "empty": "Noch keine Events.",
     "entity": "Entity",
@@ -298,7 +306,8 @@
     "sources": {
       "entity": "Einträge einer Entity",
       "media": "Medien",
-      "variables": "Variablen"
+      "variables": "Variablen",
+      "event": "Von anderen Events gestartet"
     },
     "starts": "löst aus",
     "state": "Status",
@@ -314,7 +323,8 @@
       "delete": "Löschen",
       "email": "E-Mail",
       "update": "Ändern",
-      "webhook": "Webhook"
+      "webhook": "Webhook",
+      "event": "Event starten"
     },
     "stepsHelp": "Mehrere Schritte laufen nacheinander; der erste Fehler stoppt den Lauf.",
     "stepsLabel": "Schritte (JSON)",
@@ -325,7 +335,8 @@
     "testWhich": {
       "entity": "ID eines Eintrags (leer: der zuletzt geänderte)",
       "media": "ID einer Datei (leer: die neueste)",
-      "variables": "Name einer Variable (leer: die erste)"
+      "variables": "Name einer Variable (leer: die erste)",
+      "event": "Werte als JSON, z. B. {'{'}\"title\": \"Test\"{'}'} (leer: keine)"
     },
     "testWhichPlugin": "ID eines Eintrags (leer: ein Beispiel)",
     "withCondition": "mit Bedingung",
@@ -334,7 +345,8 @@
     "authorCreated": "Angelegt von",
     "authorUpdated": "Zuletzt geändert von",
     "authorAll": "allen Benutzern",
-    "authorInvalid": "Die Bedingung unten ist kein gültiges JSON-Objekt – erst korrigieren, dann lässt sich der Autor wählen."
+    "authorInvalid": "Die Bedingung unten ist kein gültiges JSON-Objekt – erst korrigieren, dann lässt sich der Autor wählen.",
+    "executeOnly": "Läuft nur, wenn ein anderes Event es mit dem Schritt „Event starten“ startet – mit den Datensätzen dieses Laufs."
   },
   "fieldTypes": {
     "autoincrement": "Laufende Nummer (Auto-Increment)",

@@ -30,7 +30,11 @@ use Throwable;
  *   create   {entity, data}                 a record per record of the run
  *   update   {entity, where, data}          the records that match "where" (filter), per record of the run
  *   delete   {entity, where}                the same, into the trash or deleted
- * Values may use placeholders (see Template).
+ *   event    {event, data?}                 starts an event of the source "event" with the records of the run
+ *                                          ("data": values added to each of them, with placeholders)
+ * Values may use placeholders (see Template). In "data" and "where" of create/update/delete, a value
+ * {"_lookup": {"entity": "authors", "where": {"user": "{{record.created_by}}"}}} is the id of the first
+ * record that matches (null: none), with "all": true the list of all their ids.
  */
 final class EventRunner
 {
@@ -76,7 +80,8 @@ final class EventRunner
     $failed = null;
     $origin = array_merge((array)json_decode((string)($run['origin'] ?? '[]'), true), [(string)$event['id']]);
 
-    $this->dispatcher->within((int)$run['depth'] + 1, $origin, function () use ($runId, $event, $project, $records, $steps, &$progress, &$failed): void {
+    // The runs its steps start are created within the chain: one level deeper, with its origin
+    $next = $this->dispatcher->within((int)$run['depth'] + 1, $origin, function () use ($runId, $event, $project, $records, $steps, &$progress, &$failed): array {
       $this->actor->as('event:'.$event['id'], function () use ($runId, $event, $project, $records, $steps, &$progress, &$failed): void {
         foreach ($steps as $index => $step) {
           if ('done' === ($progress[$index]['status'] ?? null)) {
@@ -105,6 +110,7 @@ final class EventRunner
           }
         }
       });
+      return $this->dispatcher->flush();
     });
 
     $this->events->updateRun($runId, [
@@ -113,8 +119,8 @@ final class EventRunner
       'finished_at' => date('Y-m-d H:i:s'),
     ]);
     // Events the steps started: queued ones wait for the worker, the others run now
-    foreach ($this->dispatcher->flush() as $next) {
-      $this->run($next);
+    foreach ($next as $nextRun) {
+      $this->run($nextRun);
     }
   }
 
@@ -134,8 +140,9 @@ final class EventRunner
       $result[] = ['type' => $type, 'preview' => match ($type) {
         'webhook' => ['url' => $step['url'] ?? null, 'body' => $this->webhookBody($event, $project->slug, $records)],
         'email' => array_map(fn(array $ctx): array => ['to' => implode(', ', $this->recipients(Template::render($step['to'] ?? '', $ctx))), 'subject' => Template::render($step['subject'] ?? '', $ctx), 'body' => Template::render($step['body'] ?? '', $ctx)], ($step['digest'] ?? false) ? array_slice($contexts, 0, 1) : $contexts),
-        'create', 'update' => array_map(static fn(array $ctx): array => ['entity' => $step['entity'] ?? null, 'where' => Template::render($step['where'] ?? null, $ctx), 'data' => Template::render($step['data'] ?? [], $ctx)], $contexts),
-        'delete' => array_map(static fn(array $ctx): array => ['entity' => $step['entity'] ?? null, 'where' => Template::render($step['where'] ?? null, $ctx)], $contexts),
+        'create', 'update' => array_map(fn(array $ctx): array => ['entity' => $step['entity'] ?? null, 'where' => $this->fill($step['where'] ?? null, $ctx), 'data' => $this->fill($step['data'] ?? [], $ctx)], $contexts),
+        'delete' => array_map(fn(array $ctx): array => ['entity' => $step['entity'] ?? null, 'where' => $this->fill($step['where'] ?? null, $ctx)], $contexts),
+        'event' => ['event' => $this->events->find((string)($step['event'] ?? ''), $project->id)['name'] ?? null, 'records' => array_map(fn(array $record, array $ctx): array => $this->passed($step, $record, $ctx)['data'], array_slice($records, 0, 3), array_slice($contexts, 0, 3))],
         default => $this->pluginPreview($step, $event, $records, $contexts),
       }];
     }
@@ -195,16 +202,16 @@ final class EventRunner
         foreach ($records as $i => $record) {
           $context = $this->context($event, $project, $record, $count);
           if ('create' === $type) {
-            $this->recordService->create($target, (array)Template::render($step['data'] ?? [], $context));
+            $this->recordService->create($target, (array)$this->fill($step['data'] ?? [], $context));
           } else {
-            $where = (array)Template::render($step['where'] ?? [], $context);
+            $where = (array)$this->fill($step['where'] ?? [], $context);
             if ([] === $where) {
               throw new RuntimeException('"where" is missing - which records?');
             }
             $ids = array_map('strval', $this->recordQuery->apply($this->records->query($target), $target, '', $where, 'id')->select('id')->column());
             if ('update' === $type) {
               foreach ($ids as $id) {
-                $this->recordService->update($target, $id, (array)Template::render($step['data'] ?? [], $context));
+                $this->recordService->update($target, $id, (array)$this->fill($step['data'] ?? [], $context));
               }
             } elseif ([] !== $ids) {
               $this->recordService->deleteMany($target, $ids);
@@ -212,6 +219,20 @@ final class EventRunner
           }
           $progress($i + 1, $count);
         }
+        return;
+
+      case 'event':
+        $target = $this->events->find((string)($step['event'] ?? ''), $project->id);
+        if (null === $target || 'event' !== ($target['source'] ?? null)) {
+          throw new RuntimeException('There is no event to start (source "Started by other events") with this id.');
+        }
+        if (!(bool)$target['is_active']) {
+          throw new RuntimeException(sprintf('The event "%s" is switched off.', (string)$target['name']));
+        }
+        $progress(0, $count);
+        $passed = array_map(fn(array $record): array => $this->passed($step, $record, $this->context($event, $project, $record, $count)), $records);
+        $this->dispatcher->execute($target, $passed);
+        $progress($count, $count);
         return;
     }
     // Steps of plugins ("<plugin>.<step>")
@@ -282,6 +303,50 @@ final class EventRunner
       'count' => count($records),
       'records' => $records,
     ];
+  }
+
+  /**
+   * A record of the run as the event of a step "event" gets it: its values plus those of "data".
+   *
+   * @param array<string, mixed> $context
+   */
+  private function passed(array $step, array $record, array $context): array
+  {
+    $data = is_array($step['data'] ?? null) && [] !== $step['data'] ? (array)$this->fill($step['data'], $context) : [];
+    return ['id' => (string)($record['id'] ?? ''), 'entity' => $record['entity'] ?? null, 'action' => EventDispatcher::EXECUTE, 'data' => $data + (array)($record['data'] ?? []), 'old' => $record['old'] ?? null];
+  }
+
+  /**
+   * Values of a step: the placeholders filled in, then the lookups resolved.
+   *
+   * @param array<string, mixed> $context
+   */
+  private function fill(mixed $value, array $context): mixed
+  {
+    return $this->lookups(Template::render($value, $context));
+  }
+
+  /**
+   * {"_lookup": {"entity", "where", "all"?}}: the id of the first matching record (null: none), with
+   * "all" the ids of all of them. Lookups inside "where" are resolved first.
+   */
+  private function lookups(mixed $value): mixed
+  {
+    if (!is_array($value)) {
+      return $value;
+    }
+    $value = array_map(fn($item) => $this->lookups($item), $value);
+    if (1 !== count($value) || !is_array($value['_lookup'] ?? null)) {
+      return $value;
+    }
+    $lookup = $value['_lookup'];
+    $target = $this->entities->findBySlug((string)($lookup['entity'] ?? '')) ?? throw new RuntimeException(sprintf('Lookup: there is no entity "%s".', (string)($lookup['entity'] ?? '')));
+    $where = $lookup['where'] ?? null;
+    if (!is_array($where) || [] === $where) {
+      throw new RuntimeException('Lookup: "where" is missing - which records?');
+    }
+    $ids = array_map('strval', $this->recordQuery->apply($this->records->query($target), $target, '', $where, 'id')->select('id')->column());
+    return ($lookup['all'] ?? false) ? $ids : ($ids[0] ?? null);
   }
 
   private function context(array $event, $project, array $record, int $count): array

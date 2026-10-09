@@ -14,6 +14,7 @@ optional condition and the steps.
 | `entity` (with `entity`) | `create`, `update`, `delete`, `publish`, `unpublish`, `restore` | the record of the entity |
 | `media` | `create` (upload), `update` (renamed, kept or not), `delete` | the file as the API presents it (`id`, `name`, `url`, `mime_type` …) |
 | `variables` | `create`, `update`, `delete` | the variable (`name`, `value`, `translations`) |
+| `event` | `execute` only | the records of the run that started it, plus the values of its step (see below) |
 
 For media and variables the condition is checked on the data itself (`eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`,
 `like`, `null`, plus `_changed` and `_old`), e.g. `{"name": "url", "_changed": ["value"]}`. The cleanup of unused
@@ -56,7 +57,15 @@ files (`./yii cleanup`) starts no events.
   their values). The service behind it (`EnvVariables`) is meant for every setting that needs secrets.
   - `create` `{entity, data}`, `update` `{entity, where, data}`, `delete` `{entity, where}`: per record; `where`
     is a filter.
-- **Placeholders:** `{{record.title}}`, `{{record.image.url}}`, `{{old.price}}`, `{{event.name}}`,
+  - `event` `{event, data?}`: starts an event of the source `event` (*Started by other events*) with the records of
+    this run. `data` adds values to each of them, with placeholders, e.g. `{"note": "from {{event.name}}"}` - in the
+    started event they are `{{record.note}}` next to the fields of the record. Its condition is checked on that, and
+    it runs one level deeper in the chain.
+- **Lookups:** a value `{"_lookup": {"entity": "authors", "where": {"user": "{{record.created_by}}"}}}` in `data`
+  or `where` is the id of the first record that matches the filter (`null`: none). With `"all": true` it is the list
+  of the ids of all matches, e.g. for a repeatable reference. Example: [Blog with author profiles](blog-authors.md).
+- **Placeholders:** `{{record.title}}`, `{{record.image.url}}`, `{{record.created_by}}` /
+  `{{record.updated_by}}` (`user:<id>` or `client:<id>`), `{{old.price}}`, `{{event.name}}`,
   `{{event.action}}`, `{{project.url}}` or `{{url}}` (project variables), `{{count}}`. A value that is only a placeholder keeps
   its type (number, list, object).
 - **One run per request:** everything an event collects in one request is one run. An import of 100 rows is one
@@ -69,6 +78,10 @@ files (`./yii cleanup`) starts no events.
   kept.
 - **Chains:** steps that write records start the events of those entities, one level deeper, at most 3 levels, and an
   event never starts itself again in its own chain. The admin app shows them as workflow.
+- **Events as building blocks:** an event with the source `event` has no trigger of its own - it runs only when the
+  step `event` of another event starts it. Steps that several events share (notify the team, sync with a shop …) are
+  kept in one place this way. The step fails if the event is switched off, already runs in this chain (a loop) or
+  the chain is 3 levels deep. Its test run takes the values as JSON, e.g. `{"title": "Test"}`.
 - Changes made by steps are saved as `event:<id>` (shown as *Event: name*), entity permissions do not apply.
   Failed requests start nothing.
 - **Editing:** the admin app edits the steps as form (a card per step: *+ Webhook*, *+ E-mail* …, the fields of the

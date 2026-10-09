@@ -586,7 +586,7 @@ export interface EventItem {
   id: string
   name: string
   /** What it listens to: records of an entity, the media or the variables of the project */
-  source: 'entity' | 'media' | 'variables' | `${string}.${string}`
+  source: 'entity' | 'media' | 'variables' | 'event' | `${string}.${string}`
   /** Slug of the entity it listens to (source "entity") */
   entity: string | null
   /** Sources of plugins: limited to one of their targets (e.g. a form) - null: all */

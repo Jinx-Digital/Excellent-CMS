@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Content;
 
+use App\Domain\Schema\CustomFieldTypes;
 use App\Domain\Schema\EntityDefinition;
 use App\Domain\Schema\FieldDefinition;
 use App\Domain\Schema\FieldType;
@@ -285,6 +286,15 @@ final class RecordQuery
   {
     if (null === $field) {
       return null === $value || is_bool($value) ? $value : (string)$value;
+    }
+    // Field types of plugins convert the value as when saving (user field: "user:<id>" is the id); one
+    // they refuse matches nothing
+    if (FieldType::Custom === $field->type) {
+      try {
+        return CustomFieldTypes::toStorage($field, $value);
+      } catch (InvalidValueException) {
+        return is_scalar($value) ? (string)$value : (string)json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+      }
     }
     // Filters on "required" values may compare to anything the type accepts
     return ValueConverter::convert($field->type, $value, max($field->length ?? 0, 1000), $field->scale);

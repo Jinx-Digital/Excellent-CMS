@@ -4,8 +4,8 @@ import type { Entity, PluginStepDef } from '~/types/api'
 // Steps of an event: as form (a card per step) or as JSON - both edit the same list of objects,
 // which is what the API stores. Keys the form does not know stay as they are.
 type Step = Record<string, unknown>
-// fields: placeholders of the items of a plugin's source (e.g. the fields of a form)
-const props = defineProps<{ entities: Entity[], source?: string, trigger: string, error?: string, fields?: string[] }>()
+// fields: placeholders of the items of a plugin's source (e.g. the fields of a form); events: those the step "event" can start
+const props = defineProps<{ entities: Entity[], source?: string, trigger: string, error?: string, fields?: string[], events?: { value: string, label: string }[] }>()
 const steps = defineModel<Step[]>({ required: true })
 const { t } = useI18n()
 const toast = useToast()
@@ -26,7 +26,8 @@ const TYPES = [
   { type: 'email', icon: 'i-lucide-mail' },
   { type: 'create', icon: 'i-lucide-plus' },
   { type: 'update', icon: 'i-lucide-pencil' },
-  { type: 'delete', icon: 'i-lucide-trash-2' }
+  { type: 'delete', icon: 'i-lucide-trash-2' },
+  { type: 'event', icon: 'i-lucide-zap' }
 ]
 // Steps of the active plugins ("<plugin>.<step>"): their form follows the fields they describe
 const { data: pluginStepData } = useLazyAsyncData('plugin-steps', () => useApi()<{ data: PluginStepDef[] }>('/admin/plugins/steps').catch(() => ({ data: [] as PluginStepDef[] })))
@@ -75,7 +76,8 @@ function add(type: string) {
     email: { type, to: '', subject: '', body: '', digest: false },
     create: { type, entity: '', data: {} },
     update: { type, entity: '', where: { id: '' }, data: {} },
-    delete: { type, entity: '', where: { id: '' } }
+    delete: { type, entity: '', where: { id: '' } },
+    event: { type, event: '', data: {} }
   }
   const plugin = pluginStep(type)
   steps.value = [...steps.value, defaults[type] ?? { type, ...Object.fromEntries((plugin?.fields ?? []).map(field => [field.key, field.kind === 'bool' ? !!field.default : (field.default ?? '')])) }]
@@ -133,6 +135,13 @@ function addRow(index: number, key: 'data' | 'where') {
   const used = Object.keys((steps.value[index]?.[key] ?? {}) as Record<string, unknown>)
   const free = fieldsOf(String(steps.value[index]?.entity ?? '')).find(f => !used.includes(f.name))?.name ?? (key === 'where' && !used.includes('id') ? 'id' : '')
   if (free) set(index, key, { ...(steps.value[index]?.[key] as Record<string, unknown> ?? {}), [free]: '' })
+}
+// The step "event": values of any name - a new row gets a free name to rename
+function addValue(index: number) {
+  const used = Object.keys((steps.value[index]?.data ?? {}) as Record<string, unknown>)
+  let n = used.length + 1
+  while (used.includes(`value_${n}`)) n++
+  set(index, 'data', { ...(steps.value[index]?.data as Record<string, unknown> ?? {}), [`value_${n}`]: '' })
 }
 function removeRow(index: number, key: 'data' | 'where', field: string) {
   const object = { ...(steps.value[index]?.[key] as Record<string, unknown> ?? {}) }
@@ -268,6 +277,23 @@ async function copy(text: string) {
                 </div>
               </UFormField>
             </template>
+          </div>
+
+          <div v-if="step.type === 'event'" class="grid gap-3">
+            <UFormField :label="$t('events.editor.event')" :help="events?.length ? $t('events.editor.eventHelp') : $t('events.editor.noExecutable')" required>
+              <USelect :model-value="String(step.event ?? '') || undefined" :items="events ?? []" :placeholder="$t('events.editor.chooseEvent')" class="w-full sm:w-72" @update:model-value="set(index, 'event', $event)" />
+            </UFormField>
+            <UFormField :label="$t('events.editor.passData')" :help="$t('events.editor.passDataHelp')">
+              <div class="space-y-2">
+                <!-- By position: renaming a value keeps the focus -->
+                <div v-for="(row, rowIndex) in rows(step.data)" :key="rowIndex" class="flex gap-2">
+                  <UInput :model-value="row.field" :placeholder="$t('events.editor.valueName')" class="font-mono w-48 shrink-0" @update:model-value="setRow(index, 'data', rowIndex, 'field', String($event))" />
+                  <UInput :model-value="row.value" :placeholder="shown('record.title')" class="font-mono flex-1" @update:model-value="setRow(index, 'data', rowIndex, 'value', String($event))" />
+                  <UButton color="neutral" variant="ghost" icon="i-lucide-x" :aria-label="$t('common.remove')" @click="removeRow(index, 'data', row.field)" />
+                </div>
+                <UButton size="xs" color="neutral" variant="outline" icon="i-lucide-plus" :label="$t('events.editor.addField')" @click="addValue(index)" />
+              </div>
+            </UFormField>
           </div>
 
           <div v-if="pluginStep(step.type)" class="grid gap-3">

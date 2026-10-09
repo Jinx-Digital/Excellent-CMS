@@ -19,7 +19,7 @@ use App\Shared\Id;
  */
 final class EventService
 {
-  public const STEPS = ['webhook', 'email', 'create', 'update', 'delete'];
+  public const STEPS = ['webhook', 'email', 'create', 'update', 'delete', 'event'];
   public const MODES = ['direct', 'queue'];
 
   public function __construct(
@@ -138,6 +138,15 @@ final class EventService
       $record = ['id' => $recordId, 'entity' => (string)$event['source'], 'action' => $actions[0] ?? 'create', 'data' => $data, 'old' => null];
       return ['matches' => $this->conditions->matchesData($condition, $data, null), 'steps' => $this->runner->preview($event, [$record])];
     }
+    if ('event' === $event['source']) {
+      // Started by other events: the values as JSON - what the calling event would pass on
+      $data = '' !== trim($recordId) ? json_decode($recordId, true) : [];
+      if (!is_array($data)) {
+        throw new UserFacingException(I18n::t('Please enter the values as JSON object, e.g. {"title": "Test"}.'));
+      }
+      $record = ['id' => '', 'entity' => null, 'action' => EventDispatcher::EXECUTE, 'data' => $data, 'old' => null];
+      return ['matches' => $this->conditions->matchesData($condition, $data, null), 'steps' => $this->runner->preview($event, [$record])];
+    }
     if ('entity' !== ($event['source'] ?? 'entity')) {
       // Media: the file by its id (empty: the latest); variables: the variable by its name (empty: the first)
       if ('' === $recordId) {
@@ -251,7 +260,10 @@ final class EventService
         $values['entity_id'] = $entity->id;
       }
     }
-    if (null === $existing || array_key_exists('actions', $data) || array_key_exists('source', $data)) {
+    if ('event' === $source) {
+      // Started by the step "event" of other events - nothing else
+      $values['actions'] = json_encode([EventDispatcher::EXECUTE]);
+    } elseif (null === $existing || array_key_exists('actions', $data) || array_key_exists('source', $data)) {
       $allowed = 'entity' === $source ? EventDispatcher::ACTIONS : (null !== $pluginSource ? array_map('strval', array_keys($pluginSource['actions'])) : EventDispatcher::DATA_ACTIONS);
       $actions = array_values(array_unique(array_map('strval', (array)($data['actions'] ?? json_decode((string)($existing['actions'] ?? '[]'), true)))));
       if ([] === $actions || [] !== array_diff($actions, $allowed)) {
@@ -291,7 +303,7 @@ final class EventService
         $errors['steps'][] = I18n::t('Please enter the steps as a JSON list, e.g. [{"type": "webhook", "url": "https://…"}].');
       } else {
         foreach ($steps as $index => $step) {
-          foreach ($this->stepErrors(is_array($step) ? $step : []) as $message) {
+          foreach ($this->stepErrors(is_array($step) ? $step : [], $existing['id'] ?? null) as $message) {
             $errors['steps'][] = sprintf('%d: %s', $index + 1, $message);
           }
         }
@@ -307,7 +319,7 @@ final class EventService
   /**
    * @return list<string>
    */
-  private function stepErrors(array $step): array
+  private function stepErrors(array $step, ?string $eventId = null): array
   {
     $type = (string)($step['type'] ?? '');
     // Steps of active plugins: checked by their fields
@@ -371,6 +383,17 @@ final class EventService
           }
         }
         break;
+      case 'event':
+        $target = $this->events->find((string)($step['event'] ?? ''), $this->projectId());
+        if (null === $target || 'event' !== $target['source']) {
+          $errors[] = I18n::t('Please choose an event that is started by other events.');
+        } elseif ($target['id'] === $eventId) {
+          $errors[] = I18n::t('An event cannot start itself.');
+        }
+        if (null !== ($step['data'] ?? null) && !is_array($step['data'])) {
+          $errors[] = I18n::t('"{key}" must be an object.', ['key' => 'data']);
+        }
+        break;
       default:
         if (null === $this->entities->findBySlug((string)($step['entity'] ?? ''))) {
           $errors[] = I18n::t('There is no entity "{entity}".', ['entity' => (string)($step['entity'] ?? '')]);
@@ -381,8 +404,33 @@ final class EventService
         if (in_array($type, ['update', 'delete'], true) && (!is_array($step['where'] ?? null) || [] === $step['where'])) {
           $errors[] = I18n::t('"{key}" is missing.', ['key' => 'where']);
         }
+        foreach (self::lookups([$step['data'] ?? null, $step['where'] ?? null]) as $lookup) {
+          if (null === $this->entities->findBySlug((string)($lookup['entity'] ?? ''))) {
+            $errors[] = '_lookup: '.I18n::t('There is no entity "{entity}".', ['entity' => (string)($lookup['entity'] ?? '')]);
+          }
+          if (!is_array($lookup['where'] ?? null) || [] === $lookup['where']) {
+            $errors[] = '_lookup: '.I18n::t('"{key}" is missing.', ['key' => 'where']);
+          }
+        }
     }
     return $errors;
+  }
+
+  /**
+   * The {"_lookup": {…}} of the values of a step (see EventRunner), also inside each other.
+   *
+   * @return list<array<string, mixed>>
+   */
+  private static function lookups(mixed $value): array
+  {
+    if (!is_array($value)) {
+      return [];
+    }
+    $found = 1 === count($value) && is_array($value['_lookup'] ?? null) ? [$value['_lookup']] : [];
+    foreach ($value as $item) {
+      $found = [...$found, ...self::lookups($item)];
+    }
+    return $found;
   }
 
   /**

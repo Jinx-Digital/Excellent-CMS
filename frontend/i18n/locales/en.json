@@ -221,7 +221,8 @@
       "publish": "Publish",
       "restore": "Restore",
       "unpublish": "Back to draft",
-      "update": "Update"
+      "update": "Update",
+      "execute": "Started"
     },
     "active": "Active",
     "allTargets": "All",
@@ -268,7 +269,14 @@
       "where": "Which records",
       "whereHelp": "Filter: field = value, e.g. ID = {'{{'}record.product{'}}'}. Comparisons as JSON, e.g. {'{'}\"gte\": 10{'}'}.",
       "continueOnError": "Continue if this step fails",
-      "continueOnErrorHelp": "If this step fails, the next steps run anyway (the run counts as failed; \"Retry\" repeats only what failed)."
+      "continueOnErrorHelp": "If this step fails, the next steps run anyway (the run counts as failed; \"Retry\" repeats only what failed).",
+      "event": "Event",
+      "eventHelp": "Events with the source \"Started by other events\". It gets the records of this run.",
+      "chooseEvent": "Choose an event",
+      "noExecutable": "No event can be started yet - create one with the source \"Started by other events\".",
+      "passData": "Additional values",
+      "passDataHelp": "Added to every record - in the started event as {'{{'}record.<name>{'}}'}. The placeholders of this event work here.",
+      "valueName": "name"
     },
     "empty": "No events yet.",
     "entity": "Entity",
@@ -298,7 +306,8 @@
     "sources": {
       "entity": "Records of an entity",
       "media": "Media",
-      "variables": "Variables"
+      "variables": "Variables",
+      "event": "Started by other events"
     },
     "starts": "starts",
     "state": "State",
@@ -314,7 +323,8 @@
       "delete": "Delete",
       "email": "E-mail",
       "update": "Update",
-      "webhook": "Webhook"
+      "webhook": "Webhook",
+      "event": "Start event"
     },
     "stepsHelp": "Several steps run one after the other; the first error stops the run.",
     "stepsLabel": "Steps (JSON)",
@@ -325,7 +335,8 @@
     "testWhich": {
       "entity": "ID of a record (empty: the one changed last)",
       "media": "ID of a file (empty: the latest)",
-      "variables": "Name of a variable (empty: the first)"
+      "variables": "Name of a variable (empty: the first)",
+      "event": "Values as JSON, e.g. {'{'}\"title\": \"Test\"{'}'} (empty: none)"
     },
     "testWhichPlugin": "ID of an item (empty: a sample)",
     "withCondition": "with condition",
@@ -334,7 +345,8 @@
     "authorCreated": "Created by",
     "authorUpdated": "Last changed by",
     "authorAll": "all users",
-    "authorInvalid": "The condition below is no valid JSON object - fix it first, then the author can be chosen."
+    "authorInvalid": "The condition below is no valid JSON object - fix it first, then the author can be chosen.",
+    "executeOnly": "Runs only when another event starts it with the step \"Start event\" - with the records of that run."
   },
   "fieldTypes": {
     "autoincrement": "Counter (auto increment)",

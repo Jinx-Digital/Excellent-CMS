@@ -312,4 +312,90 @@ class EventTest extends ApiTestCase
     $this->api('PUT', "/entities/posts/records/{$mine['id']}", ['title' => 'Noch einmal'], $admin, $here);
     $this->assertSame('Geändert von einem der beiden', $this->api('GET', "/entities/posts/records/{$mine['id']}", token: $admin, headers: $here)['body']['data']['author']);
   }
+
+  public function testLookupLinksTheAuthorProfile(): void
+  {
+    // Blog: authors are records with the user they belong to, a new post gets the profile of its creator
+    $admin = $this->login();
+    $adminId = $this->api('GET', '/auth/me', token: $admin)['body']['data']['user']['id'];
+    $project = 'l'.bin2hex(random_bytes(4));
+    $this->api('POST', '/admin/projects', ['name' => 'Blog', 'slug' => $project, 'table_prefix' => $project.'_'], $admin);
+    $here = ['X-Project' => $project];
+    $this->api('POST', '/admin/entities', ['slug' => 'authors', 'name' => 'Autoren', 'fields' => [['name' => 'name', 'type' => 'string'], ['name' => 'account', 'type' => 'string']]], $admin, $here);
+    $this->api('POST', '/admin/entities', ['slug' => 'posts', 'name' => 'Beiträge', 'fields' => [['name' => 'title', 'type' => 'string'], ['name' => 'author', 'type' => 'reference', 'reference' => 'authors'], ['name' => 'team', 'type' => 'reference', 'reference' => 'authors', 'repeatable' => true]]], $admin, $here);
+    $this->api('POST', '/entities/authors/records', ['name' => 'Jemand anders', 'account' => 'user:nobody'], $admin, $here);
+    $profile = $this->api('POST', '/entities/authors/records', ['name' => 'Admin', 'account' => 'user:'.$adminId], $admin, $here)['body']['data'];
+
+    $lookup = ['_lookup' => ['entity' => 'nope', 'where' => []]];
+    $refused = $this->api('POST', '/admin/events', ['name' => 'X', 'entity' => 'posts', 'actions' => ['create'], 'steps' => [['type' => 'update', 'entity' => 'posts', 'where' => ['id' => '{{record.id}}'], 'data' => ['author' => $lookup]]]], $admin, $here);
+    $this->assertSame(422, $refused['status']);
+    $this->assertCount(2, $refused['body']['error_data']['steps'], json_encode($refused['body'], JSON_UNESCAPED_UNICODE));
+
+    $event = $this->api('POST', '/admin/events', ['name' => 'Autor verknüpfen', 'entity' => 'posts', 'actions' => ['create'], 'steps' => [
+      ['type' => 'update', 'entity' => 'posts', 'where' => ['id' => '{{record.id}}'], 'data' => [
+        'author' => ['_lookup' => ['entity' => 'authors', 'where' => ['account' => '{{record.created_by}}']]],
+        'team' => ['_lookup' => ['entity' => 'authors', 'where' => ['account' => ['like' => 'user:']], 'all' => true]],
+      ]],
+    ]], $admin, $here);
+    $this->assertSame(200, $event['status'], json_encode($event['body'], JSON_UNESCAPED_UNICODE));
+    $post = $this->api('POST', '/entities/posts/records', ['title' => 'Hallo'], $admin, $here)['body']['data'];
+    $saved = $this->api('GET', "/entities/posts/records/{$post['id']}", token: $admin, headers: $here)['body']['data'];
+    $this->assertSame($profile['id'], $saved['author']);
+    $this->assertCount(2, $saved['team']);
+    // The test run shows the result of the lookup
+    $test = $this->api('POST', "/admin/events/{$event['body']['data']['id']}/test", ['record' => $post['id']], $admin, $here)['body']['data'];
+    $this->assertSame($profile['id'], $test['steps'][0]['preview'][0]['data']['author']);
+
+    // Nobody matches: empty
+    $this->api('PUT', "/entities/authors/records/{$profile['id']}", ['account' => 'user:gone'], $admin, $here);
+    $other = $this->api('POST', '/entities/posts/records', ['title' => 'Ohne Profil'], $admin, $here)['body']['data'];
+    $this->assertNull($this->api('GET', "/entities/posts/records/{$other['id']}", token: $admin, headers: $here)['body']['data']['author']);
+  }
+
+  public function testEventsStartOtherEvents(): void
+  {
+    $admin = $this->login();
+    $project = 'x'.bin2hex(random_bytes(4));
+    $this->api('POST', '/admin/projects', ['name' => 'Shop', 'slug' => $project, 'table_prefix' => $project.'_'], $admin);
+    $here = ['X-Project' => $project];
+    $this->api('POST', '/admin/entities', ['slug' => 'orders', 'name' => 'Orders', 'fields' => [['name' => 'title', 'type' => 'string']]], $admin, $here);
+    $this->api('POST', '/admin/entities', ['slug' => 'logs', 'name' => 'Logs', 'fields' => [['name' => 'title', 'type' => 'string']]], $admin, $here);
+
+    // Only "execute", whatever is sent; the condition is checked on what it gets
+    $log = $this->api('POST', '/admin/events', ['name' => 'Protokoll', 'source' => 'event', 'actions' => ['create'], 'condition' => ['title' => ['ne' => 'skip']], 'steps' => [
+      ['type' => 'create', 'entity' => 'logs', 'data' => ['title' => '{{record.title}} / {{record.note}} / {{event.action}}']],
+    ]], $admin, $here);
+    $this->assertSame(200, $log['status'], json_encode($log['body'], JSON_UNESCAPED_UNICODE));
+    $log = $log['body']['data'];
+    $this->assertSame(['execute'], $log['actions']);
+
+    $entityEvent = $this->api('POST', '/admin/events', ['name' => 'Order', 'entity' => 'orders', 'actions' => ['update'], 'steps' => [['type' => 'webhook', 'url' => 'https://example.com']]], $admin, $here)['body']['data'];
+    $refused = $this->api('POST', '/admin/events', ['name' => 'X', 'entity' => 'orders', 'actions' => ['create'], 'steps' => [['type' => 'event', 'event' => $entityEvent['id']]]], $admin, $here);
+    $this->assertSame(422, $refused['status'], 'only events of the source "event" can be started');
+    $this->assertSame(422, $this->api('PUT', "/admin/events/{$log['id']}", ['steps' => [['type' => 'event', 'event' => $log['id']]]], $admin, $here)['status'], 'not itself');
+
+    $start = $this->api('POST', '/admin/events', ['name' => 'Neue Bestellung', 'entity' => 'orders', 'actions' => ['create'], 'steps' => [
+      ['type' => 'event', 'event' => $log['id'], 'data' => ['note' => 'von {{event.name}}']],
+    ]], $admin, $here);
+    $this->assertSame(200, $start['status'], json_encode($start['body'], JSON_UNESCAPED_UNICODE));
+    $this->api('POST', '/entities/orders/records', ['title' => 'A'], $admin, $here);
+    $this->api('POST', '/entities/orders/records', ['title' => 'skip'], $admin, $here);
+    $this->assertSame(['A / von Neue Bestellung / execute'], array_column($this->api('GET', '/entities/logs/records', token: $admin, headers: $here)['body']['data'], 'title'));
+    $run = $this->api('GET', "/admin/events/{$log['id']}/runs", token: $admin, headers: $here)['body']['data'];
+    $this->assertSame([1, 'done', 1], [count($run), $run[0]['status'], $run[0]['depth']]);
+
+    // A loop (Protokoll → Zurück → Protokoll) stops with an error at the step
+    $back = $this->api('POST', '/admin/events', ['name' => 'Zurück', 'source' => 'event', 'steps' => [['type' => 'event', 'event' => $log['id']]]], $admin, $here)['body']['data'];
+    $this->api('PUT', "/admin/events/{$log['id']}", ['steps' => [['type' => 'event', 'event' => $back['id']]]], $admin, $here);
+    $this->api('POST', '/entities/orders/records', ['title' => 'B'], $admin, $here);
+    $failed = $this->api('GET', "/admin/events/{$back['id']}/runs", token: $admin, headers: $here)['body']['data'][0];
+    $this->assertSame('failed', $failed['status']);
+    $this->assertStringContainsString('cannot start itself again', (string)$failed['error']);
+
+    // Test run: the values as JSON
+    $test = $this->api('POST', "/admin/events/{$start['body']['data']['id']}/test", ['record' => ''], $admin, $here)['body']['data'];
+    $this->assertSame('Protokoll', $test['steps'][0]['preview']['event']);
+    $tested = $this->api('POST', "/admin/events/{$log['id']}/test", ['record' => '{"title": "skip"}'], $admin, $here)['body']['data'];
+    $this->assertFalse($tested['matches']);
+  }
 }

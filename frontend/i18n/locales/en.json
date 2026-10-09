@@ -1237,13 +1237,18 @@
     "title": "File types",
     "help": "Which files may be uploaded - in the media library and in every media field (fields can limit them further).",
     "all": "All",
-    "svgHelp": "Can contain scripts - served protected (without scripts)",
+    "svgHelp": "SVG can contain scripts - the CMS serves it protected (without scripts).",
     "groups": {
       "image": "Images",
       "document": "Documents",
       "archive": "Archives",
       "audio": "Audio",
       "video": "Video"
-    }
+    },
+    "search": "Search file types, e.g. svg, pdf, video",
+    "count": "{allowed} of {total} allowed",
+    "allShown": "All shown",
+    "optional": "optional",
+    "nothing": "No file type matches “{search}”."
   }
 }

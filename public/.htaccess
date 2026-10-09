@@ -30,7 +30,7 @@ RewriteRule ^ 200.html [L]
 # CSP start (written by bin/csp.php - make generate)
 <IfModule mod_headers.c>
   <FilesMatch "\.html$">
-    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-6CF5ow8k3mEyn3JmhvaXPtTAtolagzj9FKg0YfRmR94=' 'sha256-RiZrUvokeVIiMJKZmTopGNcADFX0hRfrgDEf1n/yKAI=' 'sha256-dQe7DgPOq/qWQotT6iPfx2bUSkfz+xxLG8BF99jJGHQ=' https://maps.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; media-src 'self' blob: https: http:; connect-src 'self' https:; frame-src 'self' https: http:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-TKDbhJ1KurX3vO0tqj+4+cj5GaUdekvSLyBd7J7ZRR4=' 'sha256-RiZrUvokeVIiMJKZmTopGNcADFX0hRfrgDEf1n/yKAI=' 'sha256-CnXHF4YB8cExCSKU+9gqYDcIoSa5aTmzMW47cEuC9eo=' https://maps.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; media-src 'self' blob: https: http:; connect-src 'self' https:; frame-src 'self' https: http:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
     Header set X-Content-Type-Options "nosniff"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
   </FilesMatch>

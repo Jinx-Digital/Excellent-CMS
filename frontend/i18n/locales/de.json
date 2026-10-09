@@ -1237,13 +1237,18 @@
     "title": "Dateitypen",
     "help": "Welche Dateien hochgeladen werden dürfen – in der Mediathek und in allen Medienfeldern (Felder können weiter einschränken).",
     "all": "Alle",
-    "svgHelp": "Kann Skripte enthalten – wird geschützt ausgeliefert (ohne Skripte)",
+    "svgHelp": "SVG kann Skripte enthalten – das CMS liefert es geschützt aus (ohne Skripte).",
     "groups": {
       "image": "Bilder",
       "document": "Dokumente",
       "archive": "Archive",
       "audio": "Audio",
       "video": "Video"
-    }
+    },
+    "search": "Dateityp suchen, z. B. svg, pdf, video",
+    "count": "{allowed} von {total} erlaubt",
+    "allShown": "Alle angezeigten",
+    "optional": "optional",
+    "nothing": "Kein Dateityp passt zu „{search}“."
   }
 }

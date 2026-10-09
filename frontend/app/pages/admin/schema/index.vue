@@ -90,7 +90,7 @@ async function move(from: number, to: number) {
       </ul>
     </UCard>
 
-    <UCard v-if="shared.length || globalProject" :ui="{ body: 'p-0 sm:p-0' }">
+    <UCard v-if="!project?.is_global && (shared.length || globalProject)":ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>

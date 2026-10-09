@@ -103,6 +103,26 @@ class GlobalTest extends ApiTestCase
     $this->assertSame(422, $this->api('GET', "/{$project}/content/{$slug}?lang=xx")['status']);
   }
 
+  public function testPreviewOfGlobalEntitiesOnTheWebsiteOfAProject(): void
+  {
+    $admin = $this->login();
+    $slug = $this->uniqueSlug('notices');
+    $this->api('POST', '/admin/entities', ['slug' => $slug, 'name' => 'Hinweise', 'access' => 'public', 'drafts' => true, 'preview_url' => 'https://example.com/preview?token={{token}}', 'fields' => [['name' => 'title', 'type' => 'string']]], $admin, self::GLOBAL);
+    $draft = $this->api('POST', "/entities/{$slug}/records", ['title' => 'Entwurf', 'draft' => true], $admin, self::GLOBAL)['body']['data'];
+    $posts = $this->uniqueSlug('posts');
+    $this->createEntity(['slug' => $posts, 'name' => 'Beiträge', 'access' => 'public', 'drafts' => true, 'fields' => [['name' => 'title', 'type' => 'string']]], $admin);
+    $this->createRecord($posts, ['title' => 'Geheim', 'draft' => true], $admin);
+
+    // Opened in a project: the token is for its website
+    $token = $this->api('POST', "/entities/{$slug}/records/{$draft['id']}/preview", [], $admin)['body']['data']['token'];
+    $this->assertSame('Entwurf', $this->api('GET', "/main/content/{$slug}/{$draft['id']}?preview=".rawurlencode($token))['body']['data']['title'] ?? null);
+    // Opened in the area "Global": works on every website, but only for the global entities
+    $token = $this->api('POST', "/entities/{$slug}/records/{$draft['id']}/preview", [], $admin, self::GLOBAL)['body']['data']['token'];
+    $one = $this->api('GET', "/main/content/{$slug}/{$draft['id']}?preview=".rawurlencode($token));
+    $this->assertSame(200, $one['status'], json_encode($one['body'], JSON_UNESCAPED_UNICODE));
+    $this->assertSame([], $this->api('GET', "/main/content/{$posts}?preview=".rawurlencode($token))['body']['data'], 'no drafts of the project');
+  }
+
   private static function png(): string
   {
     $image = imagecreatetruecolor(3, 3);

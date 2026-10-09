@@ -6,6 +6,7 @@ namespace App\Application\Content;
 
 use App\Application\Service\CurrentProject;
 use App\Application\Service\EnvVariables;
+use App\Repository\ProjectRepository;
 use App\Domain\Schema\EntityDefinition;
 use App\Shared\Exception\UserFacingException;
 use App\Shared\I18n;
@@ -18,7 +19,8 @@ use Yiisoft\Http\Status;
  * with it, e.g. https://example.com/api/preview?id={{id}}&token={{token}}. Requests of the content
  * API with that token (?preview=… or header X-Preview-Token) get drafts and the working copies of
  * published records instead of the live state - only of that project, only reading, only until it
- * expires. The website renders them with its own design.
+ * expires. The website renders them with its own design. A token of the area "Global" works on the
+ * content API of every project, but only for the global entities.
  *
  * Placeholders of the address: {{id}}, {{entity}}, {{token}}, {{lang}}, {{record.<field>}} (URL
  * encoded) and $NAME .env variables (e.g. the secret of a draft-mode endpoint).
@@ -32,6 +34,7 @@ final class PreviewService
     private int $ttl,
     private CurrentProject $currentProject,
     private EnvVariables $env,
+    private ProjectRepository $projects,
   ) {
   }
 
@@ -44,7 +47,10 @@ final class PreviewService
   public function issue(EntityDefinition $entity, array $record, ?string $language): array
   {
     $expires = time() + $this->ttl;
-    $token = $this->sign(['p' => $entity->projectId, 'e' => $entity->slug, 'r' => (string)$record['id'], 'x' => $expires]);
+    // Global entities are also edited from within a project: the token is for that project's website
+    $project = $this->currentProject->find();
+    $projectId = null !== $project && !$project->isGlobal ? $project->id : $entity->projectId;
+    $token = $this->sign(['p' => $projectId, 'e' => $entity->slug, 'r' => (string)$record['id'], 'x' => $expires]);
     $url = null;
     if (null !== $entity->previewUrl) {
       $context = ['id' => (string)$record['id'], 'entity' => $entity->slug, 'token' => $token, 'lang' => $language ?? (string)$entity->defaultLanguage(), 'record' => $record];
@@ -63,9 +69,10 @@ final class PreviewService
   /**
    * Checks a token of a request to the content API.
    *
+   * @return string the project of the token: the current one or the area "Global"
    * @throws UserFacingException 401 if it is invalid, expired or of another project
    */
-  public function verify(string $token): void
+  public function verify(string $token): string
   {
     $parts = explode('.', $token);
     $payload = 2 === count($parts) ? json_decode((string)self::decode($parts[0]), true) : null;
@@ -75,9 +82,11 @@ final class PreviewService
     if ((int)($payload['x'] ?? 0) < time()) {
       throw new UserFacingException(I18n::t('The preview has expired - please open it again in the CMS.'), Status::UNAUTHORIZED, 'preview_expired');
     }
-    if (($payload['p'] ?? null) !== $this->currentProject->id()) {
+    $projectId = (string)($payload['p'] ?? '');
+    if ($projectId !== $this->currentProject->id() && $projectId !== $this->projects->global()?->id) {
       throw new UserFacingException(I18n::t('The preview token belongs to another project.'), Status::UNAUTHORIZED, 'invalid_preview_token');
     }
+    return $projectId;
   }
 
   private function sign(array $payload): string

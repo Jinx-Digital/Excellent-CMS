@@ -76,8 +76,8 @@ final class ContentService
     return $this->templates->items($field, $blocks);
   }
 
-  /** Preview token of the request (see PreviewService): drafts and working copies are delivered */
-  private bool $preview = false;
+  /** Project of the preview token of the request (see PreviewService): drafts and working copies are delivered */
+  private ?string $previewProject = null;
 
   /**
    * ?preview=<token> or X-Preview-Token: checks the token and switches to the preview.
@@ -88,13 +88,18 @@ final class ContentService
     if ('' === $token || null === $this->previews) {
       return;
     }
-    $this->previews->verify($token);
-    $this->preview = true;
+    $this->previewProject = $this->previews->verify($token);
   }
 
   public function isPreview(): bool
   {
-    return $this->preview;
+    return null !== $this->previewProject;
+  }
+
+  /** A token of the area "Global" shows only the drafts of global entities */
+  private function previews(EntityDefinition $entity): bool
+  {
+    return null !== $this->previewProject && ($this->previewProject === $this->currentProject->id() || $this->previewProject === $entity->projectId);
   }
 
   /**
@@ -137,7 +142,7 @@ final class ContentService
   public function query(EntityDefinition $entity, string $search, array $filter, ?string $sort, ?string $language = null): QueryInterface
   {
     return $this->recordQuery->apply(
-      $this->preview ? $this->records->query($entity) : $this->records->publishedQuery($entity),
+      $this->previews($entity) ? $this->records->query($entity) : $this->records->publishedQuery($entity),
       $entity,
       $search,
       $filter,
@@ -157,7 +162,7 @@ final class ContentService
    */
   public function present(EntityDefinition $entity, array $rows, ?array $fields, array $include, ?string $language = null): array
   {
-    if ($this->preview && null !== $this->workingCopies) {
+    if ($this->previews($entity) && null !== $this->workingCopies) {
       // Published records with saved changes: as they will be
       $rows = array_map(fn(array $row): array => array_merge($row, $this->workingCopies->find($entity, (string)$row['id'])['values'] ?? []), $rows);
     }
@@ -265,7 +270,7 @@ final class ContentService
   private function published(EntityDefinition $entity, string $id): array
   {
     $row = $this->records->find($entity, $id);
-    if (null === $row || (!$this->preview && RecordRepository::isDraft($entity, $row))) {
+    if (null === $row || (!$this->previews($entity) && RecordRepository::isDraft($entity, $row))) {
       throw UserFacingException::notFound(I18n::t('This record does not exist.'));
     }
     return $row;

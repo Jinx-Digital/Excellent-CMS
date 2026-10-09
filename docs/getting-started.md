@@ -100,7 +100,7 @@ database from `.env`, runs the migrations and creates two projects and the globa
 make db-reset
 ```
 
-**Area “Global”** (tables `global_*`) - shared by all projects, readable in the content API of each one (e.g.
+**Area “Global”** (tables `_global_*`) - shared by all projects, readable in the content API of each one (e.g.
 `/api/v1/bibliothek/content/countries`), their schema is edited in the area “Global”:
 
 | Entity | Access | Content |
@@ -109,7 +109,7 @@ make db-reset
 | Countries | public | All 249 ISO 3166 countries: English and German name, ISO-2/ISO-3/numeric code, region (reference), currency, EU membership |
 | Languages | public | the 7 original languages of the books, with ISO code and native name |
 
-**Project “Library”** (`/api/v1/bibliothek/content`, tables `lib_*`):
+**Project “Library”** (`/api/v1/bibliothek/content`, tables `_lib_*`):
 
 | Entity | Access | Content |
 | --- | --- | --- |
@@ -117,13 +117,14 @@ make db-reset
 | Genres | public | 7 genres (novel, drama, poetry …) in English and German |
 | Books | OAuth | 42 of the authors' best-known works with original title and year of first publication, references to author, genre and (global) language, and a sequence number |
 
-**Project “Documentation”** (`/api/v1/docs/content`, tables `docs_*`): the documentation of Excellent CMS itself,
-in English (the files of `docs/`, loaded with `./yii docs:sync`).
+**Project “Documentation”** (`/api/v1/docs/content`, tables `_docs_*`): the documentation of Excellent CMS itself,
+in English (the files of `docs/`, loaded with `./yii docs:sync`), and the page builder demo.
 
 | Entity | Content |
 | --- | --- |
-| Pages | 14 documentation pages as a tree, with translatable title, slug, summary and Markdown text, and the field group SEO |
+| Pages | the 21 pages of `docs/` as a tree, with title, slug, position, summary, Markdown text and the field group SEO |
 | Blog | 3 release notes with date, repeatable tags and the field group SEO |
+| Landing pages | page builder: “Home” and “All blocks” with every block type (hero, media & text, the block Columns of the CMS, gallery, code …), drafts and the preview of `demo/page-builder.php` of the PHP SDK |
 
 Links in the texts use the project variables `{{url}}` (the website), `{{api_url}}` and `{{admin_url}}` (the demo).
 

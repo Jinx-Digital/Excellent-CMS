@@ -36,7 +36,8 @@ DELETE /api/v1/admin/roles/{slug}
 
 Users and clients take `"roles": ["products"]`. Users return `roles`, `permissions` (their own) and
 `effective_permissions`, and clients return `roles` and `effective`. Fields take `"read_roles"` and `"write_roles"`
-(lists of role slugs, empty = like the entity). Logins use a JWT that only carries `sub`/`ver`/`exp`.
+(lists of role slugs, empty = like the entity). Logins use a JWT that only carries `sub`/`ver`/`exp` - the admin app keeps
+it in an httpOnly cookie (scripts of the page cannot read it), scripts send it as `Authorization: Bearer`.
 Status and permissions are loaded from the database on every request, so changing a password or deactivating a user
 ends all of their sessions at once. A login is blocked after 10 failed attempts within 15 minutes.
 

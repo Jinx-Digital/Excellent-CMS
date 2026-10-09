@@ -16,8 +16,8 @@ Every record has an `id` (UUIDv7, base58), `created_at` and `updated_at`.
 | --- | --- | --- |
 | Short text | `VARCHAR(n)` | length 1–1000 |
 | Long text | `TEXT` | cannot be unique |
-| Integer | `BIGINT` | |
-| Decimal | `DECIMAL` | 0–8 decimal places |
+| Integer | `BIGINT` | optionally a minimum and maximum (`min_value`, `max_value`) - with both, `"slider": true` edits it with a slider |
+| Decimal | `DECIMAL` | 0–8 decimal places; minimum, maximum and slider like integers |
 | Yes/No | `BOOLEAN` | |
 | Date, Date and time, Time | `DATE`, `DATETIME`, `TIME` | date-times are stored in UTC |
 | Email, URL | `VARCHAR` | validated |

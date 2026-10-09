@@ -15,11 +15,10 @@ token only works in the project of its client. Entity names only have to be uniq
   `X-Project`. Projects are managed under *Administration › Projects*.
 - The table prefix can only be changed while a project has no entities. Only empty projects can be deleted, and their
   API clients and media go with them.
-- A new installation starts with one project, `main` (table prefix `main_`). Rename it, change its prefix while it has
-  no entities, or add more projects. On an existing installation, the migration puts everything that was there
-  before into this project, so the existing `c_*` tables stay as they are.
+- A new installation starts with one project, `main` (table prefix `main_`, so its tables are `_main_<entity>`), and
+  the area "Global". Rename `main`, change its prefix while it has no entities, or add more projects.
 
-**The area "Global"** is a project of its own (tables `global_*`) for data that every project needs, such as countries
+**The area "Global"** is a project of its own (tables `_global_*`) for data that every project needs, such as countries
 or currencies. Admins switch to it in the project menu and create entities there as usual. Every project then:
 
 - lists them in its navigation (section *Global*), where its users edit their records;

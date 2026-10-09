@@ -13,8 +13,9 @@ page builder demo of the PHP SDK). Each has its own database, `.env`, `storage/`
 
 For the demo, `DEMO_PREVIEW_URL` (`.env`) points the preview of the landing pages to the demo website, e.g.
 `https://demo.excellent.jinx-digital.com/page-builder.php?id={{id}}&token={{token}}`, before loading the demo data; the
-website gets `EXCELLENT_URL=https://admin.demo.excellent.jinx-digital.com` and
-`EXCELLENT_ADMIN_ORIGIN=https://admin.demo.excellent.jinx-digital.com` (live editing).
+website (the folder `demo/` of the PHP SDK) gets a `demo/config.local.php` returning `url` and `admin_origin`
+`https://admin.demo.excellent.jinx-digital.com` (live editing; the example is in `demo/config.php`). Without it the demos read from
+`http://localhost:8090`.
 
 ## Release package
 

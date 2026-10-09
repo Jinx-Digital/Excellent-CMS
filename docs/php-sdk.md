@@ -24,8 +24,10 @@ $cms = new ExcellentCms\Sdk\Client('https://cms.example.com', 'bibliothek', new 
 $books = $cms->entity('books')->where('author.name', 'Jane Austen')->orderBy('author')->with('author')->get();
 ```
 
-Its `demo/demo.php` reads the API of the [live demo](https://admin.demo.excellent.jinx-digital.com/) on the command line or in
-the browser; `demo/page-builder.php` is the website of the demo ([demo.excellent.jinx-digital.com](https://demo.excellent.jinx-digital.com/)).
+Its `demo/demo.php` reads the API of a CMS on the command line or in the browser; `demo/page-builder.php` is a website
+built from blocks - live at [demo.excellent.jinx-digital.com](https://demo.excellent.jinx-digital.com/), with the
+[live demo](https://admin.demo.excellent.jinx-digital.com/) behind it. Both read the local CMS (`http://localhost:8090`)
+by default; `demo/config.local.php` (not in git) or environment variables point them elsewhere, see `demo/config.php`.
 
 **Writing:** API clients can also create, update and delete records, if their client has the permission for the
 entity (*Administration › API clients*). Writing always needs a token, public entities included:

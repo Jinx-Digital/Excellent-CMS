@@ -11,7 +11,13 @@ Field groups*). **Blocks** (*Administration › Blocks*) work the same, but are 
 and can only be chosen there; field groups only for group fields - both can contain the other. Both have an optional
 **category** (e.g. "Media", "Layout") that groups them in the lists and in the block picker (`"category"` on
 `POST|PUT /api/v1/admin/groups`, `?kind=group|block` filters the list). A blocks field takes chosen blocks and/or all
-blocks of categories (`"block_categories"` - also blocks added to them later).
+blocks of categories (`"block_categories"` - also blocks added to them later; `"*"`: every block of the project).
+
+**The block "Columns"** belongs to the CMS: every project has it (category *Layout*, managed by the CMS - it cannot be
+deleted or renamed). It has 1 to 12 columns on a grid of 12, each with a width and blocks of its own; a column takes
+every block (`"*"`), and the editor offers in it what the list around it offers - on a page the blocks of the page, in a
+form (plugin "forms") its fields. Its template renders the grid without CSS of the website (classes `columns`,
+`columns__grid`, `column`).
 
 **Templates of blocks:** a block can have a template (Twig) - the HTML websites get without a template of their own.
 The content API adds `"_html"` to every item of a blocks field with `?render=html`; the PHP SDK uses it where the
@@ -41,8 +47,8 @@ type **group**, and the API returns an object:
 
 A group field can be a **blocks** field instead of using one group: the schema picks several field groups as *block
 types* (hero, text, image, quote, call to action …), and editors line up blocks of these types in any order. They add
-blocks from a menu (at the end or after a block), move them by drag & drop or the arrows, duplicate, collapse and delete
-them. The API returns a list in which every block names its type and has a stable key:
+blocks from a picker with search, grouped by category (at the end, or with the "+" between two blocks), move them by
+drag & drop or the arrows, duplicate, collapse and delete them. The API returns a list in which every block names its type and has a stable key:
 
 ```json
 "content": [
@@ -58,7 +64,8 @@ them. The API returns a list in which every block names its type and has a stabl
 - Block types can be added to or removed from the field at any time. Blocks of a removed type are left out of the
   API. A group used as block type cannot be deleted. A group field cannot become a blocks field (or the other way round).
 - **Nested blocks:** a field group may have a blocks field itself, e.g. a *column* with its own blocks inside a block
-  *columns*. A block type never contains itself, not even deeper down (422). Keys are unique in the whole value, and
+  *columns*. A block type never contains itself, not even deeper down (422) - except
+through lists taking every block (`"*"`, as the columns of Columns), which may nest on purpose. Keys are unique in the whole value, and
   the editor, the content API, the search and the media usage reach every level. In the PHP SDK, templates render the
   inner blocks with `$block->blocks('columns.0.content')`.
 - API: `{"type": "group", "blocks": ["hero", "text"]}` (names or ids of the groups) when creating the field.

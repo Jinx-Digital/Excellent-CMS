@@ -102,8 +102,15 @@ build a web component with esbuild) before packing. The server never runs Compos
 | `geo` | field type *Map position (GPS)*: OpenStreetMap or Google Maps (API key in the settings), address search |
 | `user-field` | field type *User*: a user of the project, delivered as `{id, name}` |
 | `seo` | field group *SEO* (title, description, image, canonical, noindex), redirects (`/old` and `/blog/*`, 301/302/410, counted) and `sitemap.xml` of the published records; `ExcellentCms\Sdk\Seo` in the PHP SDK |
-| `forms` | forms as records of the entity "Forms" with a block editor (field blocks, columns), block "form", event source *Form submissions*, example "Contact" with event; templates render the forms for websites (`?render=html`) |
+| `forms` | forms as records of the entity "Forms" with a block editor (field blocks, side by side with the block Columns of the CMS, response blocks), block "form", event source *Form submissions*, signed tokens against bots, example "Contact" with event; templates render the forms for websites (`?render=html`) |
+
+The ZIPs of these plugins are downloads on [excellent.jinx-digital.com/plugins](https://excellent.jinx-digital.com/plugins).
+
 - `StepRun`: `records`, `event`, `render($text, $index)` (placeholders and `$NAME`), `env()`, `progress()`,
   `postJson()`.
-- `PluginContext`: `setting()`, `settings()`, `db` (the database), `path`, `trigger()` (events of its sources).
+- `PluginContext`: `setting()`, `settings()`, `db` (the database), `path`, `trigger()` (events of its sources),
+  `sign()` / `verify()` (values signed with a key of the plugin, e.g. tokens of forms), `log()` (the log of the CMS).
+- `PluginResponse::xml()` / `::text()`: a route answers with something else than JSON (e.g. a sitemap).
+- Blocks of a plugin are created in its projects when it is activated. After an update, *Administration › Plugins*
+  offers to create its new blocks and to reset the templates of its blocks (`./yii plugins:sync [--plugin=…] [--templates]`).
 - Namespaces of the CMS (`App\`) are reserved. Plugins load only classes from their own folder.

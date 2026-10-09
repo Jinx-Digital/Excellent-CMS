@@ -8,8 +8,9 @@ order: 20
 
 ## Configuration
 
-All settings are environment variables. Locally they are read from `.env`. The loader (`vlucas/phpdotenv`) is a dev
-dependency, so after `composer install --no-dev` you have to set them as real environment variables.
+All settings are environment variables, read from the `.env` next to the CMS (also on servers, also after
+`composer install --no-dev`). Real environment variables of the server (Docker, Apache, the hosting panel) win over
+the `.env`.
 
 | Variable | Purpose |
 | --- | --- |

@@ -25,8 +25,8 @@ On a machine with Node 22+ and Composer:
 make release        # builds the admin app, then runtime/release/excellent-cms-<version>.tar.gz
 ```
 
-The package holds the API, the built admin app (`public/`), migrations, sample data, docs and the Composer libraries
-for production - no tests, sources of the admin app, `.env` or data. The server needs PHP 8.4 (intl, pdo_mysql, gd,
+The package holds the API, the built admin app (`public/` - not in the repository, every package builds it anew),
+migrations, sample data, docs and the Composer libraries for production - no tests, sources of the admin app, `.env` or data. The server needs PHP 8.4 (intl, pdo_mysql, gd,
 zip, mbstring) and MySQL 8, no Node or Composer.
 
 ## First installation
@@ -45,7 +45,8 @@ must be writable.
 ## Updates
 
 Unpack the new version next to the old one, take over `.env`, `storage/`, `plugins/` (and `runtime/logs` if you want
-the old logs), point the web server to it and run:
+the old logs), point the web server to it and run (a server that updates with `git pull` instead needs Node 22+ for
+`make generate` and Composer for `composer install --no-dev`, as the built admin app and `vendor/` are not in git):
 
 ```bash
 make update          # migrations, missing blocks of plugins, search index (php yii … without make)

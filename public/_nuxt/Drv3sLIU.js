@@ -1,1 +1,0 @@
-import{Gn as e,Vr as t,nr as n}from"./BYlZjUGM.js";import{lt as r}from"./BuvUPD5g.js";import{T as i}from"#entry";import{t as a}from"./CNs_Ozdc.js";import{t as o}from"./4slRrP69.js";var s=n({__name:`index`,setup(n){a({admin:!0});let{t:s}=r();return i({title:()=>s(`nav.groups`)}),(n,r)=>{let i=o;return t(),e(i,{kind:`group`})}}});export{s as default};

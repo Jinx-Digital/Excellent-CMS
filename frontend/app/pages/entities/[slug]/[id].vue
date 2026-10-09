@@ -778,8 +778,7 @@ const title = computed(() => isNew ? (copyOf ? t('record.duplicateTitle') : t('r
           <UButton v-if="editable && liveBlock && liveEdit" icon="i-lucide-copy" color="neutral" variant="ghost" size="sm" :aria-label="$t('blocks.duplicate')" :title="$t('blocks.duplicate')" @click="duplicateBlock({ field: liveEdit.field, key: liveBlock._key })" />
           <UButton v-if="editable && liveBlock && liveEdit" icon="i-lucide-trash-2" color="error" variant="ghost" size="sm" :aria-label="$t('common.delete')" :title="$t('common.delete')" @click="removeBlock({ field: liveEdit.field, key: liveBlock._key })" />
           <span v-if="dirty" class="ms-2 text-xs text-warning">{{ $t('record.unsaved') }}</span>
-          <UButton class="ms-auto" color="neutral" variant="ghost" :label="$t('common.close')" @click="liveEdit = null" />
-          <UButton v-if="editable" :loading="saving" icon="i-lucide-save" :label="usesWorkingCopy ? $t('record.saveWorkingCopy') : $t('common.save')" @click="saveKeepingState()" />
+          <UButton v-if="editable" class="ms-auto" :loading="saving" icon="i-lucide-save" :label="usesWorkingCopy ? $t('record.saveWorkingCopy') : $t('common.save')" @click="saveKeepingState()" />
         </div>
       </template>
     </USlideover>

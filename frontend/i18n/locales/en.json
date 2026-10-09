@@ -328,7 +328,13 @@
       "variables": "Name of a variable (empty: the first)"
     },
     "testWhichPlugin": "ID of an item (empty: a sample)",
-    "withCondition": "with condition"
+    "withCondition": "with condition",
+    "author": "Only for entries by",
+    "authorHelp": "Users who created or last changed the entry - empty: everyone. Stored as created_by / updated_by in the condition.",
+    "authorCreated": "Created by",
+    "authorUpdated": "Last changed by",
+    "authorAll": "all users",
+    "authorInvalid": "The condition below is no valid JSON object - fix it first, then the author can be chosen."
   },
   "fieldTypes": {
     "autoincrement": "Counter (auto increment)",

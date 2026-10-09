@@ -88,6 +88,10 @@ npm run dev                          # http://localhost:3090
 
 Log in with the admin account and import your first file under **Import**.
 
+The built admin app is not part of the repository: `make generate` builds it into `public/` (Node 22+) - needed when
+the CMS is served by Apache or nginx instead of `npm run dev`. Servers get it with the release package (see
+[Deployment](deployment.md)).
+
 `make help` lists all available commands.
 
 ### Demo data

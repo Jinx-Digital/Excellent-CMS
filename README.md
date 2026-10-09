@@ -32,6 +32,7 @@ cp .env.example .env     # database, JWT_SECRET …
 composer install
 make db-reset            # tables and demo data
 make dev                 # API on http://localhost:8090, admin app on http://localhost:3090
+make generate            # optional: the built admin app in public/ (not in git) for Apache/nginx
 ```
 
 Sign in with `admin@example.com` / `admin123`. A package for servers: `make release` (see [Deployment](docs/deployment.md)).

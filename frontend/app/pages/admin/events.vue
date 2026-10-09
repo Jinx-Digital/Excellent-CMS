@@ -97,6 +97,47 @@ watch(() => form.source, (source, before) => {
   if (before !== undefined && !form.actions.length && pluginSource(source)) form.actions = actionsOf(source).slice(0, 1)
   if (before !== undefined && source !== editing.value?.source) form.target = ''
 })
+// Author of the record (events of entities): created or last changed by these users - kept in the condition
+// ("created_by": "user:…", several: {"in": [...]}), so the JSON and the picker stay the same
+type Condition = Record<string, unknown>
+const authorField = ref<'created_by' | 'updated_by'>('created_by')
+const parsedCondition = computed<Condition | null | false>(() => {
+  const text = form.condition.trim()
+  if (!text) return null
+  try {
+    const value = JSON.parse(text)
+    return value && typeof value === 'object' && !Array.isArray(value) ? value as Condition : false
+  } catch {
+    return false
+  }
+})
+const usersOf = (value: unknown): string[] => {
+  if (typeof value === 'string') return value.split(',')
+  if (!value || typeof value !== 'object') return []
+  const operators = value as Record<string, unknown>
+  if (Array.isArray(operators.in)) return operators.in.map(String)
+  if (typeof operators.in === 'string') return operators.in.split(',')
+  return typeof operators.eq === 'string' ? [operators.eq] : []
+}
+const writeAuthors = (field: 'created_by' | 'updated_by', list: string[], without?: string) => {
+  const condition = parsedCondition.value
+  if (condition === false) return
+  const next: Condition = { ...(condition ?? {}) }
+  if (without) delete next[without]
+  if (list.length) next[field] = list.length === 1 ? list[0] : { in: list }
+  else delete next[field]
+  form.condition = Object.keys(next).length ? JSON.stringify(next, null, 2) : ''
+}
+const authors = computed<string[]>({
+  get: () => parsedCondition.value ? usersOf(parsedCondition.value[authorField.value]).map(s => s.trim()).filter(s => s.startsWith('user:')) : [],
+  set: list => writeAuthors(authorField.value, list),
+})
+// Created by ↔ last changed by: the chosen users go along
+watch(authorField, (field, before) => {
+  const condition = parsedCondition.value
+  if (condition && before && field !== before && condition[before] !== undefined) writeAuthors(field, usersOf(condition[before]), before)
+})
+
 const { submit, saving, errors } = useSubmit()
 function edit(event: EventItem | null) {
   editing.value = event
@@ -105,6 +146,8 @@ function edit(event: EventItem | null) {
     : { name: '', source: 'entity', entity: entities[0]?.slug ?? '', target: '', actions: ['create'], mode: 'direct', active: true, condition: '', steps: [] })
   errors.value = {}
   testResult.value = null
+  // A condition on the last change: the picker shows that
+  authorField.value = event?.condition && 'updated_by' in event.condition && !('created_by' in event.condition) ? 'updated_by' : 'created_by'
   open.value = true
 }
 async function save() {
@@ -227,6 +270,12 @@ const percent = (run: EventRun) => {
             </UFormField>
             <UFormField :label="$t('events.state')"><USwitch id="event-active" v-model="form.active" :label="$t('events.active')" class="mt-2" /></UFormField>
           </div>
+          <UFormField v-if="form.source === 'entity'" :label="$t('events.author')" :help="parsedCondition === false ? $t('events.authorInvalid') : $t('events.authorHelp')">
+            <div class="flex flex-wrap gap-2">
+              <USelect v-model="authorField" :items="[{ value: 'created_by', label: $t('events.authorCreated') }, { value: 'updated_by', label: $t('events.authorUpdated') }]" :disabled="parsedCondition === false" class="w-48" />
+              <USelectMenu v-model="authors" :items="recipients.items.value" value-key="value" multiple :placeholder="$t('events.authorAll')" :disabled="parsedCondition === false" class="min-w-64 flex-1" />
+            </div>
+          </UFormField>
           <UFormField :label="$t('events.condition')" :help="$t('events.conditionHelp')" :error="errors.condition">
             <UTextarea v-model="form.condition" autoresize :rows="3" class="font-mono w-full" placeholder='{ "draft": false, "price": { "gte": 10 }, "_changed": ["price"] }' />
           </UFormField>

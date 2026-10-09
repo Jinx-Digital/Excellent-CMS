@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 /**
  * Content-Security-Policy of the admin app (run by `make generate`): only the app's own scripts run -
- * the inline scripts of the built pages by their hashes, plus Google Maps (plugin "geo"). Written into
- * public/.htaccess between "# CSP start" and "# CSP end"; for nginx: php bin/csp.php --print.
+ * the inline scripts of the built pages by their hashes, plus Google Maps (plugin "geo"). Writes
+ * public/.htaccess: resources/public.htaccess with the policy between "# CSP start" and "# CSP end";
+ * for nginx: php bin/csp.php --print.
  */
 
 $public = dirname(__DIR__).'/public';
@@ -40,8 +41,9 @@ if (in_array('--print', $argv, true)) {
   echo $policy, PHP_EOL;
   exit(0);
 }
+// public/.htaccess = the template of the repository + the policy (public/ is built, not in git)
 $file = $public.'/.htaccess';
-$htaccess = (string)file_get_contents($file);
+$htaccess = (string)file_get_contents(dirname(__DIR__).'/resources/public.htaccess');
 $block = "# CSP start (written by bin/csp.php - make generate)\n<IfModule mod_headers.c>\n  <FilesMatch \"\\.html$\">\n    Header set Content-Security-Policy \"".$policy."\"\n    Header set X-Content-Type-Options \"nosniff\"\n    Header set Referrer-Policy \"strict-origin-when-cross-origin\"\n  </FilesMatch>\n</IfModule>\n# CSP end";
 $htaccess = preg_match('/# CSP start.*?# CSP end/s', $htaccess)
   ? (string)preg_replace('/# CSP start.*?# CSP end/s', str_replace('\\', '\\\\', $block), $htaccess)

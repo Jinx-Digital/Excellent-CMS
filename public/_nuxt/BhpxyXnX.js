@@ -1,1 +1,0 @@
-import{x as e}from"./BuvUPD5g.js";function t(t,n){if(typeof t!=`object`||!t)return!1;let r=e(t,n);return r!=null&&r!==``}function n(e,t){let n=t?{xs:44,sm:48,md:52,lg:56,xl:60}:{xs:24,sm:28,md:32,lg:36,xl:40};return n[e]??n.md}function r(e,r,i,a){let o=n(r,!0),s=n(r,!1);return a?()=>o:i?n=>t(e[n],i)?o:s:()=>s}export{r as t};

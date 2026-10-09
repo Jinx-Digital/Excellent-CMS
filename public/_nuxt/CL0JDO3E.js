@@ -1,1 +1,0 @@
-import{u as e}from"./BYlZjUGM.js";import{_ as t,x as n}from"#entry";function r(){let{session:r,project:i}=t();return e(`plugin-pages`,()=>r.value?n()(`/plugins/pages`).then(e=>e.data).catch(()=>[]):Promise.resolve([]),{watch:[()=>r.value?.user.id,()=>i.value?.slug]})}export{r as t};

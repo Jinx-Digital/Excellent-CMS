@@ -328,7 +328,13 @@
       "variables": "Name einer Variable (leer: die erste)"
     },
     "testWhichPlugin": "ID eines Eintrags (leer: ein Beispiel)",
-    "withCondition": "mit Bedingung"
+    "withCondition": "mit Bedingung",
+    "author": "Nur für Einträge von",
+    "authorHelp": "Benutzer, die den Eintrag angelegt bzw. zuletzt geändert haben – leer: alle. Steht als created_by / updated_by in der Bedingung.",
+    "authorCreated": "Angelegt von",
+    "authorUpdated": "Zuletzt geändert von",
+    "authorAll": "allen Benutzern",
+    "authorInvalid": "Die Bedingung unten ist kein gültiges JSON-Objekt – erst korrigieren, dann lässt sich der Autor wählen."
   },
   "fieldTypes": {
     "autoincrement": "Laufende Nummer (Auto-Increment)",

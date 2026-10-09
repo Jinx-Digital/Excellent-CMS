@@ -1,1 +1,0 @@
-import{$i as e,Un as t}from"./BYlZjUGM.js";import{a as n}from"./Bllya7SR.js";function r(r){return t(()=>!e(r)||!!n(r)?.closest(`form`))}export{r as t};

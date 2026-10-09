@@ -297,5 +297,19 @@ class EventTest extends ApiTestCase
 
     $mine = $this->api('POST', '/entities/posts/records', ['title' => 'Von mir'], $admin, $here)['body']['data'];
     $this->assertSame('Profil Admin', $this->api('GET', "/entities/posts/records/{$mine['id']}", token: $admin, headers: $here)['body']['data']['author']);
+
+    // As the admin app's picker writes it: several users ({"in": [...]}) and "last changed by" (updated_by)
+    $editorId = $this->api('GET', '/auth/me', token: $this->editorToken())['body']['data']['user']['id'];
+    $this->api('PUT', "/admin/events/{$event['body']['data']['id']}", ['actions' => ['create', 'update'], 'condition' => ['updated_by' => ['in' => ['user:'.$editorId, 'user:'.$adminId]]], 'steps' => [
+      ['type' => 'update', 'entity' => 'posts', 'where' => ['id' => '{{record.id}}'], 'data' => ['author' => 'Geändert von einem der beiden']],
+    ]], $admin, $here);
+    $this->api('PUT', "/entities/posts/records/{$mine['id']}", ['title' => 'Von mir, geändert'], $admin, $here);
+    $this->assertSame('Geändert von einem der beiden', $this->api('GET', "/entities/posts/records/{$mine['id']}", token: $admin, headers: $here)['body']['data']['author']);
+    // Only the editor: the admin's change does not count
+    $this->api('PUT', "/admin/events/{$event['body']['data']['id']}", ['condition' => ['updated_by' => 'user:'.$editorId], 'steps' => [
+      ['type' => 'update', 'entity' => 'posts', 'where' => ['id' => '{{record.id}}'], 'data' => ['author' => 'Redaktion']],
+    ]], $admin, $here);
+    $this->api('PUT', "/entities/posts/records/{$mine['id']}", ['title' => 'Noch einmal'], $admin, $here);
+    $this->assertSame('Geändert von einem der beiden', $this->api('GET', "/entities/posts/records/{$mine['id']}", token: $admin, headers: $here)['body']['data']['author']);
   }
 }

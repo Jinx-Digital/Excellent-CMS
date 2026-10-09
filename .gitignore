@@ -25,3 +25,8 @@ frontend/.data
 # Installed plugins (uploaded in the admin app)
 /plugins/*
 !/plugins/.gitkeep
+
+# The admin app is built (make generate, make release) - only the entry point of the API is kept
+/public/*
+!/public/api/
+frontend/dist

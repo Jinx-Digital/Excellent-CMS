@@ -1,1 +1,0 @@
-var e={ä:`ae`,ö:`oe`,ü:`ue`,Ä:`Ae`,Ö:`Oe`,Ü:`Ue`,ß:`ss`},t=(t,n=255)=>t.replace(/[äöüÄÖÜß]/g,t=>e[t]??t).normalize(`NFKD`).replace(/[̀-ͯ]/g,``).toLowerCase().replace(/[^a-z0-9]+/g,`-`).replace(/^-+|-+$/g,``).slice(0,n).replace(/-+$/,``);export{t};

@@ -16,8 +16,11 @@ client and offers:
 - typed exceptions for every error.
 
 ```bash
-composer require lugat/excellent-cms-php-sdk guzzlehttp/guzzle
+composer config repositories.excellent-cms-sdk vcs https://github.com/Jinx-Digital/Excellent-CMS-PHP-SDK
+composer require jinx-digital/excellent-cms-php-sdk guzzlehttp/guzzle
 ```
+
+The SDK comes from GitHub (not from Packagist) - the first command adds the repository to your `composer.json`.
 
 ```php
 $cms = new ExcellentCms\Sdk\Client('https://cms.example.com', 'bibliothek', new ExcellentCms\Sdk\Auth\ClientCredentials($id, $secret));

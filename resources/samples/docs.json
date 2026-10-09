@@ -1,0 +1,56 @@
+{
+  "posts": [
+    {
+      "slug": "excellent-cms-1-0",
+      "published": "2026-10-01",
+      "title": "Excellent CMS 1.0",
+      "summary": "The first release: from spreadsheet to API in minutes.",
+      "body": "Excellent CMS turns spreadsheets into a typed database, an admin app and a REST API. This first release brings the import, permissions per entity, OAuth clients, a rate limit and the media library.\n\nRead the [getting started guide]({{url}}/docs/getting-started).",
+      "tags": [
+        "release"
+      ],
+      "seo": {
+        "keywords": [
+          "release"
+        ],
+        "description": "The first release: from spreadsheet to API in minutes."
+      }
+    },
+    {
+      "slug": "projects-and-languages",
+      "published": "2026-10-03",
+      "title": "Projects and languages",
+      "summary": "Several projects in one installation, and translatable fields.",
+      "body": "One installation can now hold several projects, each with its own content API under `{{api_url}}/<project>/content`. Fields can be translatable, and `?lang=` picks the language.",
+      "tags": [
+        "release",
+        "i18n"
+      ],
+      "seo": {
+        "keywords": [
+          "release",
+          "i18n"
+        ],
+        "description": "Several projects in one installation, and translatable fields."
+      }
+    },
+    {
+      "slug": "field-groups",
+      "published": "2026-10-04",
+      "title": "Field groups",
+      "summary": "Reuse sets of fields across entities.",
+      "body": "Field groups bundle fields like SEO keywords and description for reuse in pages, blog posts and anything else. Groups can be nested, repeatable and translatable - and existing fields can be turned into a group.",
+      "tags": [
+        "release",
+        "schema"
+      ],
+      "seo": {
+        "keywords": [
+          "release",
+          "schema"
+        ],
+        "description": "Reuse sets of fields across entities."
+      }
+    }
+  ]
+}

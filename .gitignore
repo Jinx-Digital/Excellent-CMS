@@ -1,0 +1,27 @@
+.idea
+.DS_Store
+
+# Dependencies
+/vendor
+node_modules
+frontend/.nuxt
+frontend/.output
+frontend/.data
+
+# Local settings (not shared)
+.env
+# Settings of other installations (passwords, keys) - only the example is shared
+.env.*
+!.env.example
+
+# Runtime files
+/runtime/*
+!/runtime/.gitkeep
+/storage/*
+!/storage/.gitkeep
+/tests/_output/*
+/tests/Support/_generated
+
+# Installed plugins (uploaded in the admin app)
+/plugins/*
+!/plugins/.gitkeep

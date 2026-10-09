@@ -1,0 +1,250 @@
+name,name_de,alpha2code,alpha3code,numeric_code,region,currency,eu_member
+Afghanistan,Afghanistan,AF,AFG,004,034,AFN,no
+Albania,Albanien,AL,ALB,008,039,ALL,no
+Algeria,Algerien,DZ,DZA,012,015,DZD,no
+"American Samoa",Amerikanisch-Samoa,AS,ASM,016,061,USD,no
+Andorra,Andorra,AD,AND,020,039,EUR,no
+Angola,Angola,AO,AGO,024,017,AOA,no
+Anguilla,Anguilla,AI,AIA,660,029,XCD,no
+Antarctica,Antarktis,AQ,ATA,010,QO,,no
+"Antigua & Barbuda","Antigua und Barbuda",AG,ATG,028,029,XCD,no
+Argentina,Argentinien,AR,ARG,032,005,ARS,no
+Armenia,Armenien,AM,ARM,051,145,AMD,no
+Aruba,Aruba,AW,ABW,533,029,AWG,no
+Australia,Australien,AU,AUS,036,053,AUD,no
+Austria,Österreich,AT,AUT,040,155,EUR,yes
+Azerbaijan,Aserbaidschan,AZ,AZE,031,145,AZN,no
+Bahamas,Bahamas,BS,BHS,044,029,BSD,no
+Bahrain,Bahrain,BH,BHR,048,145,BHD,no
+Bangladesh,Bangladesch,BD,BGD,050,034,BDT,no
+Barbados,Barbados,BB,BRB,052,029,BBD,no
+Belarus,Belarus,BY,BLR,112,151,BYN,no
+Belgium,Belgien,BE,BEL,056,155,EUR,yes
+Belize,Belize,BZ,BLZ,084,013,BZD,no
+Benin,Benin,BJ,BEN,204,011,XOF,no
+Bermuda,Bermuda,BM,BMU,060,021,BMD,no
+Bhutan,Bhutan,BT,BTN,064,034,BTN,no
+Bolivia,Bolivien,BO,BOL,068,005,BOB,no
+"Bosnia & Herzegovina","Bosnien und Herzegowina",BA,BIH,070,039,BAM,no
+Botswana,Botsuana,BW,BWA,072,018,BWP,no
+"Bouvet Island",Bouvetinsel,BV,BVT,074,005,NOK,no
+Brazil,Brasilien,BR,BRA,076,005,BRL,no
+"British Indian Ocean Territory","Britisches Territorium im Indischen Ozean",IO,IOT,086,014,USD,no
+"British Virgin Islands","Britische Jungferninseln",VG,VGB,092,029,USD,no
+Brunei,"Brunei Darussalam",BN,BRN,096,035,BND,no
+Bulgaria,Bulgarien,BG,BGR,100,151,BGN,yes
+"Burkina Faso","Burkina Faso",BF,BFA,854,011,XOF,no
+Burundi,Burundi,BI,BDI,108,014,BIF,no
+Cambodia,Kambodscha,KH,KHM,116,035,KHR,no
+Cameroon,Kamerun,CM,CMR,120,017,XAF,no
+Canada,Kanada,CA,CAN,124,021,CAD,no
+"Cape Verde","Cabo Verde",CV,CPV,132,011,CVE,no
+"Caribbean Netherlands","Karibische Niederlande",BQ,BES,535,029,USD,no
+"Cayman Islands",Kaimaninseln,KY,CYM,136,029,KYD,no
+"Central African Republic","Zentralafrikanische Republik",CF,CAF,140,017,XAF,no
+Chad,Tschad,TD,TCD,148,017,XAF,no
+Chile,Chile,CL,CHL,152,005,CLP,no
+China,China,CN,CHN,156,030,CNY,no
+"Christmas Island",Weihnachtsinsel,CX,CXR,162,053,AUD,no
+"Cocos (Keeling) Islands",Kokosinseln,CC,CCK,166,053,AUD,no
+Colombia,Kolumbien,CO,COL,170,005,COP,no
+Comoros,Komoren,KM,COM,174,014,KMF,no
+"Congo - Brazzaville",Kongo-Brazzaville,CG,COG,178,017,XAF,no
+"Congo - Kinshasa",Kongo-Kinshasa,CD,COD,180,017,CDF,no
+"Cook Islands",Cookinseln,CK,COK,184,061,NZD,no
+"Costa Rica","Costa Rica",CR,CRI,188,013,CRC,no
+Croatia,Kroatien,HR,HRV,191,039,EUR,yes
+Cuba,Kuba,CU,CUB,192,029,CUP,no
+Curaçao,Curaçao,CW,CUW,531,029,XCG,no
+Cyprus,Zypern,CY,CYP,196,145,EUR,yes
+Czechia,Tschechien,CZ,CZE,203,151,CZK,yes
+"Côte d’Ivoire","Côte d’Ivoire",CI,CIV,384,011,XOF,no
+Denmark,Dänemark,DK,DNK,208,154,DKK,yes
+Djibouti,Dschibuti,DJ,DJI,262,014,DJF,no
+Dominica,Dominica,DM,DMA,212,029,XCD,no
+"Dominican Republic","Dominikanische Republik",DO,DOM,214,029,DOP,no
+Ecuador,Ecuador,EC,ECU,218,005,USD,no
+Egypt,Ägypten,EG,EGY,818,015,EGP,no
+"El Salvador","El Salvador",SV,SLV,222,013,USD,no
+"Equatorial Guinea",Äquatorialguinea,GQ,GNQ,226,017,XAF,no
+Eritrea,Eritrea,ER,ERI,232,014,ERN,no
+Estonia,Estland,EE,EST,233,154,EUR,yes
+Eswatini,Eswatini,SZ,SWZ,748,018,SZL,no
+Ethiopia,Äthiopien,ET,ETH,231,014,ETB,no
+"Falkland Islands",Falklandinseln,FK,FLK,238,005,FKP,no
+"Faroe Islands",Färöer,FO,FRO,234,154,DKK,no
+Fiji,Fidschi,FJ,FJI,242,054,FJD,no
+Finland,Finnland,FI,FIN,246,154,EUR,yes
+France,Frankreich,FR,FRA,250,155,EUR,yes
+"French Guiana",Französisch-Guayana,GF,GUF,254,005,EUR,no
+"French Polynesia",Französisch-Polynesien,PF,PYF,258,061,XPF,no
+"French Southern Territories","Französische Süd- und Antarktisgebiete",TF,ATF,260,014,EUR,no
+Gabon,Gabun,GA,GAB,266,017,XAF,no
+Gambia,Gambia,GM,GMB,270,011,GMD,no
+Georgia,Georgien,GE,GEO,268,145,GEL,no
+Germany,Deutschland,DE,DEU,276,155,EUR,yes
+Ghana,Ghana,GH,GHA,288,011,GHS,no
+Gibraltar,Gibraltar,GI,GIB,292,039,GIP,no
+Greece,Griechenland,GR,GRC,300,039,EUR,yes
+Greenland,Grönland,GL,GRL,304,021,DKK,no
+Grenada,Grenada,GD,GRD,308,029,XCD,no
+Guadeloupe,Guadeloupe,GP,GLP,312,029,EUR,no
+Guam,Guam,GU,GUM,316,057,USD,no
+Guatemala,Guatemala,GT,GTM,320,013,GTQ,no
+Guernsey,Guernsey,GG,GGY,831,154,GBP,no
+Guinea,Guinea,GN,GIN,324,011,GNF,no
+Guinea-Bissau,Guinea-Bissau,GW,GNB,624,011,XOF,no
+Guyana,Guyana,GY,GUY,328,005,GYD,no
+Haiti,Haiti,HT,HTI,332,029,HTG,no
+"Heard & McDonald Islands","Heard und McDonaldinseln",HM,HMD,334,053,AUD,no
+Honduras,Honduras,HN,HND,340,013,HNL,no
+"Hong Kong SAR China","Sonderverwaltungsregion Hongkong",HK,HKG,344,030,HKD,no
+Hungary,Ungarn,HU,HUN,348,151,HUF,yes
+Iceland,Island,IS,ISL,352,154,ISK,no
+India,Indien,IN,IND,356,034,INR,no
+Indonesia,Indonesien,ID,IDN,360,035,IDR,no
+Iran,Iran,IR,IRN,364,034,IRR,no
+Iraq,Irak,IQ,IRQ,368,145,IQD,no
+Ireland,Irland,IE,IRL,372,154,EUR,yes
+"Isle of Man","Isle of Man",IM,IMN,833,154,GBP,no
+Israel,Israel,IL,ISR,376,145,ILS,no
+Italy,Italien,IT,ITA,380,039,EUR,yes
+Jamaica,Jamaika,JM,JAM,388,029,JMD,no
+Japan,Japan,JP,JPN,392,030,JPY,no
+Jersey,Jersey,JE,JEY,832,154,GBP,no
+Jordan,Jordanien,JO,JOR,400,145,JOD,no
+Kazakhstan,Kasachstan,KZ,KAZ,398,143,KZT,no
+Kenya,Kenia,KE,KEN,404,014,KES,no
+Kiribati,Kiribati,KI,KIR,296,057,AUD,no
+Kuwait,Kuwait,KW,KWT,414,145,KWD,no
+Kyrgyzstan,Kirgisistan,KG,KGZ,417,143,KGS,no
+Laos,Laos,LA,LAO,418,035,LAK,no
+Latvia,Lettland,LV,LVA,428,154,EUR,yes
+Lebanon,Libanon,LB,LBN,422,145,LBP,no
+Lesotho,Lesotho,LS,LSO,426,018,ZAR,no
+Liberia,Liberia,LR,LBR,430,011,LRD,no
+Libya,Libyen,LY,LBY,434,015,LYD,no
+Liechtenstein,Liechtenstein,LI,LIE,438,155,CHF,no
+Lithuania,Litauen,LT,LTU,440,154,EUR,yes
+Luxembourg,Luxemburg,LU,LUX,442,155,EUR,yes
+"Macao SAR China","Sonderverwaltungsregion Macau",MO,MAC,446,030,MOP,no
+Madagascar,Madagaskar,MG,MDG,450,014,MGA,no
+Malawi,Malawi,MW,MWI,454,014,MWK,no
+Malaysia,Malaysia,MY,MYS,458,035,MYR,no
+Maldives,Malediven,MV,MDV,462,034,MVR,no
+Mali,Mali,ML,MLI,466,011,XOF,no
+Malta,Malta,MT,MLT,470,039,EUR,yes
+"Marshall Islands",Marshallinseln,MH,MHL,584,057,USD,no
+Martinique,Martinique,MQ,MTQ,474,029,EUR,no
+Mauritania,Mauretanien,MR,MRT,478,011,MRU,no
+Mauritius,Mauritius,MU,MUS,480,014,MUR,no
+Mayotte,Mayotte,YT,MYT,175,014,EUR,no
+Mexico,Mexiko,MX,MEX,484,013,MXN,no
+Micronesia,Mikronesien,FM,FSM,583,057,USD,no
+Moldova,"Republik Moldau",MD,MDA,498,151,MDL,no
+Monaco,Monaco,MC,MCO,492,155,EUR,no
+Mongolia,Mongolei,MN,MNG,496,030,MNT,no
+Montenegro,Montenegro,ME,MNE,499,039,EUR,no
+Montserrat,Montserrat,MS,MSR,500,029,XCD,no
+Morocco,Marokko,MA,MAR,504,015,MAD,no
+Mozambique,Mosambik,MZ,MOZ,508,014,MZN,no
+"Myanmar (Burma)",Myanmar,MM,MMR,104,035,MMK,no
+Namibia,Namibia,NA,NAM,516,018,NAD,no
+Nauru,Nauru,NR,NRU,520,057,AUD,no
+Nepal,Nepal,NP,NPL,524,034,NPR,no
+Netherlands,Niederlande,NL,NLD,528,155,EUR,yes
+"New Caledonia",Neukaledonien,NC,NCL,540,054,XPF,no
+"New Zealand",Neuseeland,NZ,NZL,554,053,NZD,no
+Nicaragua,Nicaragua,NI,NIC,558,013,NIO,no
+Niger,Niger,NE,NER,562,011,XOF,no
+Nigeria,Nigeria,NG,NGA,566,011,NGN,no
+Niue,Niue,NU,NIU,570,061,NZD,no
+"Norfolk Island",Norfolkinsel,NF,NFK,574,053,AUD,no
+"North Korea",Nordkorea,KP,PRK,408,030,KPW,no
+"North Macedonia",Nordmazedonien,MK,MKD,807,039,MKD,no
+"Northern Mariana Islands","Nördliche Marianen",MP,MNP,580,057,USD,no
+Norway,Norwegen,NO,NOR,578,154,NOK,no
+Oman,Oman,OM,OMN,512,145,OMR,no
+Pakistan,Pakistan,PK,PAK,586,034,PKR,no
+Palau,Palau,PW,PLW,585,057,USD,no
+"Palestinian Territories","Palästinensische Autonomiegebiete",PS,PSE,275,145,ILS,no
+Panama,Panama,PA,PAN,591,013,PAB,no
+"Papua New Guinea",Papua-Neuguinea,PG,PNG,598,054,PGK,no
+Paraguay,Paraguay,PY,PRY,600,005,PYG,no
+Peru,Peru,PE,PER,604,005,PEN,no
+Philippines,Philippinen,PH,PHL,608,035,PHP,no
+"Pitcairn Islands",Pitcairninseln,PN,PCN,612,061,NZD,no
+Poland,Polen,PL,POL,616,151,PLN,yes
+Portugal,Portugal,PT,PRT,620,039,EUR,yes
+"Puerto Rico","Puerto Rico",PR,PRI,630,029,USD,no
+Qatar,Katar,QA,QAT,634,145,QAR,no
+Romania,Rumänien,RO,ROU,642,151,RON,yes
+Russia,Russland,RU,RUS,643,151,RUB,no
+Rwanda,Ruanda,RW,RWA,646,014,RWF,no
+Réunion,Réunion,RE,REU,638,014,EUR,no
+Samoa,Samoa,WS,WSM,882,061,WST,no
+"San Marino","San Marino",SM,SMR,674,039,EUR,no
+"Saudi Arabia",Saudi-Arabien,SA,SAU,682,145,SAR,no
+Senegal,Senegal,SN,SEN,686,011,XOF,no
+Serbia,Serbien,RS,SRB,688,039,RSD,no
+Seychelles,Seychellen,SC,SYC,690,014,SCR,no
+"Sierra Leone","Sierra Leone",SL,SLE,694,011,SLE,no
+Singapore,Singapur,SG,SGP,702,035,SGD,no
+"Sint Maarten","Sint Maarten",SX,SXM,534,029,XCG,no
+Slovakia,Slowakei,SK,SVK,703,151,EUR,yes
+Slovenia,Slowenien,SI,SVN,705,039,EUR,yes
+"Solomon Islands",Salomonen,SB,SLB,090,054,SBD,no
+Somalia,Somalia,SO,SOM,706,014,SOS,no
+"South Africa",Südafrika,ZA,ZAF,710,018,ZAR,no
+"South Georgia & South Sandwich Islands","Südgeorgien und die Südlichen Sandwichinseln",GS,SGS,239,005,GBP,no
+"South Korea",Südkorea,KR,KOR,410,030,KRW,no
+"South Sudan",Südsudan,SS,SSD,728,014,SSP,no
+Spain,Spanien,ES,ESP,724,039,EUR,yes
+"Sri Lanka","Sri Lanka",LK,LKA,144,034,LKR,no
+"St. Barthélemy","St. Barthélemy",BL,BLM,652,029,EUR,no
+"St. Helena","St. Helena",SH,SHN,654,011,SHP,no
+"St. Kitts & Nevis","St. Kitts und Nevis",KN,KNA,659,029,XCD,no
+"St. Lucia","St. Lucia",LC,LCA,662,029,XCD,no
+"St. Martin","St. Martin",MF,MAF,663,029,EUR,no
+"St. Pierre & Miquelon","St. Pierre und Miquelon",PM,SPM,666,021,EUR,no
+"St. Vincent & Grenadines","St. Vincent und die Grenadinen",VC,VCT,670,029,XCD,no
+Sudan,Sudan,SD,SDN,729,015,SDG,no
+Suriname,Suriname,SR,SUR,740,005,SRD,no
+"Svalbard & Jan Mayen","Spitzbergen und Jan Mayen",SJ,SJM,744,154,NOK,no
+Sweden,Schweden,SE,SWE,752,154,SEK,yes
+Switzerland,Schweiz,CH,CHE,756,155,CHF,no
+Syria,Syrien,SY,SYR,760,145,SYP,no
+"São Tomé & Príncipe","São Tomé und Príncipe",ST,STP,678,017,STN,no
+Taiwan,Taiwan,TW,TWN,158,030,TWD,no
+Tajikistan,Tadschikistan,TJ,TJK,762,143,TJS,no
+Tanzania,Tansania,TZ,TZA,834,014,TZS,no
+Thailand,Thailand,TH,THA,764,035,THB,no
+Timor-Leste,Timor-Leste,TL,TLS,626,035,USD,no
+Togo,Togo,TG,TGO,768,011,XOF,no
+Tokelau,Tokelau,TK,TKL,772,061,NZD,no
+Tonga,Tonga,TO,TON,776,061,TOP,no
+"Trinidad & Tobago","Trinidad und Tobago",TT,TTO,780,029,TTD,no
+Tunisia,Tunesien,TN,TUN,788,015,TND,no
+Turkmenistan,Turkmenistan,TM,TKM,795,143,TMT,no
+"Turks & Caicos Islands","Turks- und Caicosinseln",TC,TCA,796,029,USD,no
+Tuvalu,Tuvalu,TV,TUV,798,061,AUD,no
+Türkiye,Türkei,TR,TUR,792,145,TRY,no
+"U.S. Outlying Islands","Amerikanische Überseeinseln",UM,UMI,581,057,USD,no
+"U.S. Virgin Islands","Amerikanische Jungferninseln",VI,VIR,850,029,USD,no
+Uganda,Uganda,UG,UGA,800,014,UGX,no
+Ukraine,Ukraine,UA,UKR,804,151,UAH,no
+"United Arab Emirates","Vereinigte Arabische Emirate",AE,ARE,784,145,AED,no
+"United Kingdom","Vereinigtes Königreich",GB,GBR,826,154,GBP,no
+"United States","Vereinigte Staaten",US,USA,840,021,USD,no
+Uruguay,Uruguay,UY,URY,858,005,UYU,no
+Uzbekistan,Usbekistan,UZ,UZB,860,143,UZS,no
+Vanuatu,Vanuatu,VU,VUT,548,054,VUV,no
+"Vatican City",Vatikanstadt,VA,VAT,336,039,EUR,no
+Venezuela,Venezuela,VE,VEN,862,005,VES,no
+Vietnam,Vietnam,VN,VNM,704,035,VND,no
+"Wallis & Futuna","Wallis und Futuna",WF,WLF,876,061,XPF,no
+"Western Sahara",Westsahara,EH,ESH,732,015,MAD,no
+Yemen,Jemen,YE,YEM,887,145,YER,no
+Zambia,Sambia,ZM,ZMB,894,014,ZMW,no
+Zimbabwe,Simbabwe,ZW,ZWE,716,014,ZWG,no
+"Åland Islands",Ålandinseln,AX,ALA,248,154,EUR,no

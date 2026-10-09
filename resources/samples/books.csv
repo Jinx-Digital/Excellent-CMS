@@ -1,0 +1,43 @@
+Title;Original title;Author;First published;Genre;Language;Price;In stock
+Pride and Prejudice;Pride and Prejudice;Jane Austen;1813;Novel;English;9,90;yes
+Emma;Emma;Jane Austen;1815;Novel;English;9,90;yes
+Oliver Twist;Oliver Twist;Charles Dickens;1838;Novel;English;10,90;yes
+A Christmas Carol;A Christmas Carol;Charles Dickens;1843;Novella;English;6,90;yes
+Great Expectations;Great Expectations;Charles Dickens;1861;Novel;English;11,90;no
+Frankenstein;"Frankenstein; or, The Modern Prometheus";Mary Shelley;1818;Novel;English;8,90;yes
+Wuthering Heights;Wuthering Heights;Emily Brontë;1847;Novel;English;9,90;yes
+Jane Eyre;Jane Eyre;Charlotte Brontë;1847;Novel;English;10,90;yes
+Alice's Adventures in Wonderland;Alice's Adventures in Wonderland;Lewis Carroll;1865;Children's book;English;7,90;yes
+Treasure Island;Treasure Island;Robert Louis Stevenson;1883;Novel;English;8,90;yes
+Strange Case of Dr Jekyll and Mr Hyde;Strange Case of Dr Jekyll and Mr Hyde;Robert Louis Stevenson;1886;Novella;English;6,90;no
+A Study in Scarlet;A Study in Scarlet;Arthur Conan Doyle;1887;Crime;English;7,90;yes
+The Hound of the Baskervilles;The Hound of the Baskervilles;Arthur Conan Doyle;1902;Crime;English;8,90;yes
+Mrs Dalloway;Mrs Dalloway;Virginia Woolf;1925;Novel;English;10,90;yes
+To the Lighthouse;To the Lighthouse;Virginia Woolf;1927;Novel;English;10,90;no
+The Picture of Dorian Gray;The Picture of Dorian Gray;Oscar Wilde;1890;Novel;English;8,90;yes
+Dracula;Dracula;Bram Stoker;1897;Novel;English;11,90;yes
+The Adventures of Tom Sawyer;The Adventures of Tom Sawyer;Mark Twain;1876;Novel;English;8,90;yes
+Adventures of Huckleberry Finn;Adventures of Huckleberry Finn;Mark Twain;1884;Novel;English;9,90;yes
+Moby-Dick;"Moby-Dick; or, The Whale";Herman Melville;1851;Novel;English;13,90;yes
+The Raven and Other Poems;The Raven and Other Poems;Edgar Allan Poe;1845;Poetry;English;6,90;yes
+The Call of the Wild;The Call of the Wild;Jack London;1903;Novel;English;7,90;yes
+The Sorrows of Young Werther;Die Leiden des jungen Werthers;Johann Wolfgang von Goethe;1774;Novel;German;6,90;yes
+Faust, Part One;Faust. Der Tragödie erster Teil;Johann Wolfgang von Goethe;1808;Drama;German;5,90;yes
+The Robbers;Die Räuber;Friedrich Schiller;1781;Drama;German;5,90;yes
+Effi Briest;Effi Briest;Theodor Fontane;1895;Novel;German;9,90;yes
+Buddenbrooks;Buddenbrooks. Verfall einer Familie;Thomas Mann;1901;Novel;German;14,90;yes
+The Metamorphosis;Die Verwandlung;Franz Kafka;1915;Novella;German;5,90;yes
+The Trial;Der Process;Franz Kafka;1925;Novel;German;8,90;no
+Les Misérables;Les Misérables;Victor Hugo;1862;Novel;French;19,90;yes
+The Hunchback of Notre-Dame;Notre-Dame de Paris;Victor Hugo;1831;Novel;French;12,90;yes
+Madame Bovary;Madame Bovary;Gustave Flaubert;1857;Novel;French;10,90;yes
+Journey to the Centre of the Earth;Voyage au centre de la Terre;Jules Verne;1864;Novel;French;8,90;yes
+The Three Musketeers;Les Trois Mousquetaires;Alexandre Dumas;1844;Novel;French;12,90;yes
+War and Peace;Война и мир;Leo Tolstoy;1869;Novel;Russian;19,90;yes
+Anna Karenina;Анна Каренина;Leo Tolstoy;1878;Novel;Russian;15,90;yes
+Crime and Punishment;Преступление и наказание;Fyodor Dostoevsky;1866;Novel;Russian;13,90;yes
+The Brothers Karamazov;Братья Карамазовы;Fyodor Dostoevsky;1880;Novel;Russian;16,90;no
+The Cherry Orchard;Вишнёвый сад;Anton Chekhov;1904;Drama;Russian;5,90;yes
+The Wonderful Adventures of Nils;Nils Holgerssons underbara resa genom Sverige;Selma Lagerlöf;1906;Children's book;Swedish;11,90;yes
+A Doll's House;Et dukkehjem;Henrik Ibsen;1879;Drama;Norwegian;5,90;yes
+Fairy Tales Told for Children;Eventyr, fortalte for Børn;Hans Christian Andersen;1835;Fairy tales;Danish;7,90;yes

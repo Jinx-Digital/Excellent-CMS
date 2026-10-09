@@ -1,0 +1,31 @@
+name,born,died,country,wikipedia
+Jane Austen,1775-12-16,1817-07-18,GB,https://en.wikipedia.org/wiki/Jane_Austen
+Charles Dickens,1812-02-07,1870-06-09,GB,https://en.wikipedia.org/wiki/Charles_Dickens
+Mary Shelley,1797-08-30,1851-02-01,GB,https://en.wikipedia.org/wiki/Mary_Shelley
+Emily Brontë,1818-07-30,1848-12-19,GB,https://en.wikipedia.org/wiki/Emily_Bront%C3%AB
+Charlotte Brontë,1816-04-21,1855-03-31,GB,https://en.wikipedia.org/wiki/Charlotte_Bront%C3%AB
+Lewis Carroll,1832-01-27,1898-01-14,GB,https://en.wikipedia.org/wiki/Lewis_Carroll
+Robert Louis Stevenson,1850-11-13,1894-12-03,GB,https://en.wikipedia.org/wiki/Robert_Louis_Stevenson
+Arthur Conan Doyle,1859-05-22,1930-07-07,GB,https://en.wikipedia.org/wiki/Arthur_Conan_Doyle
+Virginia Woolf,1882-01-25,1941-03-28,GB,https://en.wikipedia.org/wiki/Virginia_Woolf
+Oscar Wilde,1854-10-16,1900-11-30,IE,https://en.wikipedia.org/wiki/Oscar_Wilde
+Bram Stoker,1847-11-08,1912-04-20,IE,https://en.wikipedia.org/wiki/Bram_Stoker
+Mark Twain,1835-11-30,1910-04-21,US,https://en.wikipedia.org/wiki/Mark_Twain
+Herman Melville,1819-08-01,1891-09-28,US,https://en.wikipedia.org/wiki/Herman_Melville
+Edgar Allan Poe,1809-01-19,1849-10-07,US,https://en.wikipedia.org/wiki/Edgar_Allan_Poe
+Jack London,1876-01-12,1916-11-22,US,https://en.wikipedia.org/wiki/Jack_London
+Johann Wolfgang von Goethe,1749-08-28,1832-03-22,DE,https://en.wikipedia.org/wiki/Johann_Wolfgang_von_Goethe
+Friedrich Schiller,1759-11-10,1805-05-09,DE,https://en.wikipedia.org/wiki/Friedrich_Schiller
+Theodor Fontane,1819-12-30,1898-09-20,DE,https://en.wikipedia.org/wiki/Theodor_Fontane
+Thomas Mann,1875-06-06,1955-08-12,DE,https://en.wikipedia.org/wiki/Thomas_Mann
+Franz Kafka,1883-07-03,1924-06-03,CZ,https://en.wikipedia.org/wiki/Franz_Kafka
+Victor Hugo,1802-02-26,1885-05-22,FR,https://en.wikipedia.org/wiki/Victor_Hugo
+Gustave Flaubert,1821-12-12,1880-05-08,FR,https://en.wikipedia.org/wiki/Gustave_Flaubert
+Jules Verne,1828-02-08,1905-03-24,FR,https://en.wikipedia.org/wiki/Jules_Verne
+Alexandre Dumas,1802-07-24,1870-12-05,FR,https://en.wikipedia.org/wiki/Alexandre_Dumas
+Leo Tolstoy,1828-09-09,1910-11-20,RU,https://en.wikipedia.org/wiki/Leo_Tolstoy
+Fyodor Dostoevsky,1821-11-11,1881-02-09,RU,https://en.wikipedia.org/wiki/Fyodor_Dostoevsky
+Anton Chekhov,1860-01-29,1904-07-15,RU,https://en.wikipedia.org/wiki/Anton_Chekhov
+Selma Lagerlöf,1858-11-20,1940-03-16,SE,https://en.wikipedia.org/wiki/Selma_Lagerl%C3%B6f
+Henrik Ibsen,1828-03-20,1906-05-23,NO,https://en.wikipedia.org/wiki/Henrik_Ibsen
+Hans Christian Andersen,1805-04-02,1875-08-04,DK,https://en.wikipedia.org/wiki/Hans_Christian_Andersen

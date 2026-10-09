@@ -1,0 +1,38 @@
+# Excelent CMS: admin app and API from one folder (Apache / MAMP).
+#   /api/...  -> PHP API (public/api/index.php)
+#   files     -> as they are (JS, CSS, images)
+#   anything else -> the admin app (single page, routes are handled in the browser)
+# The app files are generated with `make generate` - do not edit them here.
+
+RewriteEngine On
+
+# PWA: the manifest needs its type, the service worker must always be fresh
+AddType application/manifest+json .webmanifest
+
+RewriteRule ^api(/|$) api/index.php [L]
+# Uploaded files go through PHP too (protected ones need a signed address)
+RewriteRule ^media/ api/index.php [L]
+
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+RewriteRule ^ 200.html [L]
+
+<IfModule mod_headers.c>
+  <If "%{REQUEST_URI} =~ m#^/_nuxt/#">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </If>
+  <FilesMatch "\.(html|webmanifest)$|^sw\.js$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+# CSP start (written by bin/csp.php - make generate)
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-6CF5ow8k3mEyn3JmhvaXPtTAtolagzj9FKg0YfRmR94=' 'sha256-RiZrUvokeVIiMJKZmTopGNcADFX0hRfrgDEf1n/yKAI=' 'sha256-dQe7DgPOq/qWQotT6iPfx2bUSkfz+xxLG8BF99jJGHQ=' https://maps.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; media-src 'self' blob: https: http:; connect-src 'self' https:; frame-src 'self' https: http:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+  </FilesMatch>
+</IfModule>
+# CSP end

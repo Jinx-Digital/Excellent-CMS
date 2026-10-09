@@ -1,0 +1,1 @@
+import{Gi as e,Un as t}from"./BYlZjUGM.js";import{r as n}from"./D-KRVVma.js";function r(r){let i=n({nonce:e()});return t(()=>r?.value||i.nonce?.value)}export{r as t};

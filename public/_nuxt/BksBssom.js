@@ -1,0 +1,1 @@
+import{Gn as e,Vr as t,nr as n}from"./BYlZjUGM.js";import{t as r}from"./5tyv95V0.js";import{t as i}from"./CNs_Ozdc.js";var a=n({__name:`[id]`,setup(n){return i({admin:!0}),(n,i)=>{let a=r;return t(),e(a)}}});export{a as default};

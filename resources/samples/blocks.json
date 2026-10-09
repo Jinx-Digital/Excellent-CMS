@@ -1,0 +1,650 @@
+{
+  "_comment": "Block types of the page builder demo (project docs): field groups in this order (groups used inside others first - the column offers nested blocks, so it comes after them), then the showcase page. Read by fixtures/DemoFixture.php. The block \"columns\" is part of the CMS (CoreBlocks).",
+  "groups": [
+    {
+      "name": "faq_item",
+      "label": "Question",
+      "kind": "group",
+      "category": "Text",
+      "description": "One question of the block FAQ",
+      "fields": [
+        {
+          "name": "question",
+          "label": "Question",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "answer",
+          "label": "Answer",
+          "type": "markdown",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "stat",
+      "label": "Figure",
+      "kind": "group",
+      "category": "Data",
+      "description": "One figure of the block Figures",
+      "fields": [
+        {
+          "name": "value",
+          "label": "Value",
+          "type": "string",
+          "length": 20,
+          "required": true
+        },
+        {
+          "name": "label",
+          "label": "Label",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "media_text",
+      "label": "Media & text",
+      "kind": "block",
+      "category": "Media",
+      "description": "An image next to a text, left or right",
+      "fields": [
+        {
+          "name": "image",
+          "label": "Image",
+          "type": "media",
+          "media_accept": [
+            "image/*"
+          ]
+        },
+        {
+          "name": "ratio",
+          "label": "Aspect ratio",
+          "type": "enum",
+          "options": [
+            {
+              "value": "original",
+              "label": "Original"
+            },
+            {
+              "value": "16:9",
+              "label": "16:9 – wide"
+            },
+            {
+              "value": "3:2",
+              "label": "3:2"
+            },
+            {
+              "value": "4:3",
+              "label": "4:3"
+            },
+            {
+              "value": "1:1",
+              "label": "1:1 – square"
+            },
+            {
+              "value": "3:4",
+              "label": "3:4 – portrait"
+            },
+            {
+              "value": "21:9",
+              "label": "21:9 – cinema"
+            }
+          ]
+        },
+        {
+          "name": "media_position",
+          "label": "Image",
+          "type": "enum",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ]
+        },
+        {
+          "name": "media_width",
+          "label": "Image width (%)",
+          "type": "integer",
+          "min_value": 20,
+          "max_value": 80,
+          "slider": true
+        },
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "string"
+        },
+        {
+          "name": "body",
+          "label": "Text",
+          "type": "markdown"
+        },
+        {
+          "name": "button_label",
+          "label": "Button label",
+          "type": "string",
+          "length": 50
+        },
+        {
+          "name": "button_url",
+          "label": "Button link",
+          "type": "url"
+        }
+      ]
+    },
+    {
+      "name": "image",
+      "label": "Image",
+      "kind": "block",
+      "category": "Media",
+      "description": "One image with a caption",
+      "fields": [
+        {
+          "name": "image",
+          "label": "Image",
+          "type": "media",
+          "media_accept": [
+            "image/*"
+          ],
+          "required": true
+        },
+        {
+          "name": "ratio",
+          "label": "Aspect ratio",
+          "type": "enum",
+          "options": [
+            {
+              "value": "original",
+              "label": "Original"
+            },
+            {
+              "value": "16:9",
+              "label": "16:9 – wide"
+            },
+            {
+              "value": "3:2",
+              "label": "3:2"
+            },
+            {
+              "value": "4:3",
+              "label": "4:3"
+            },
+            {
+              "value": "1:1",
+              "label": "1:1 – square"
+            },
+            {
+              "value": "3:4",
+              "label": "3:4 – portrait"
+            },
+            {
+              "value": "21:9",
+              "label": "21:9 – cinema"
+            }
+          ]
+        },
+        {
+          "name": "caption",
+          "label": "Caption",
+          "type": "string"
+        },
+        {
+          "name": "width",
+          "label": "Width",
+          "type": "enum",
+          "options": [
+            {
+              "value": "content",
+              "label": "Like the text"
+            },
+            {
+              "value": "wide",
+              "label": "Wide"
+            },
+            {
+              "value": "full",
+              "label": "Full width"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "gallery",
+      "label": "Gallery",
+      "kind": "block",
+      "category": "Media",
+      "description": "Images in a grid - cropped to one aspect ratio, enlarged on click",
+      "fields": [
+        {
+          "name": "images",
+          "label": "Images",
+          "type": "media",
+          "media_accept": [
+            "image/*"
+          ],
+          "repeatable": true
+        },
+        {
+          "name": "per_row",
+          "label": "Images per row",
+          "type": "enum",
+          "options": [
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3"
+            },
+            {
+              "value": "4",
+              "label": "4"
+            },
+            {
+              "value": "6",
+              "label": "6"
+            }
+          ]
+        },
+        {
+          "name": "ratio",
+          "label": "Aspect ratio",
+          "type": "enum",
+          "options": [
+            {
+              "value": "original",
+              "label": "Original"
+            },
+            {
+              "value": "16:9",
+              "label": "16:9 – wide"
+            },
+            {
+              "value": "3:2",
+              "label": "3:2"
+            },
+            {
+              "value": "4:3",
+              "label": "4:3"
+            },
+            {
+              "value": "1:1",
+              "label": "1:1 – square"
+            },
+            {
+              "value": "3:4",
+              "label": "3:4 – portrait"
+            },
+            {
+              "value": "21:9",
+              "label": "21:9 – cinema"
+            }
+          ]
+        },
+        {
+          "name": "click",
+          "label": "On click",
+          "type": "enum",
+          "options": [
+            {
+              "value": "none",
+              "label": "Nothing"
+            },
+            {
+              "value": "lightbox",
+              "label": "Enlarge (lightbox)"
+            },
+            {
+              "value": "file",
+              "label": "Open the image"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quote",
+      "label": "Quote",
+      "kind": "block",
+      "category": "Text",
+      "description": "A quote with its author",
+      "fields": [
+        {
+          "name": "text",
+          "label": "Quote",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "author",
+          "label": "Author",
+          "type": "string"
+        },
+        {
+          "name": "role",
+          "label": "Role",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "video",
+      "label": "Video",
+      "kind": "block",
+      "category": "Media",
+      "description": "YouTube or Vimeo",
+      "fields": [
+        {
+          "name": "url",
+          "label": "Video address",
+          "type": "url",
+          "required": true
+        },
+        {
+          "name": "caption",
+          "label": "Caption",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "faq",
+      "label": "FAQ",
+      "kind": "block",
+      "category": "Text",
+      "description": "Questions and answers to open",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "string"
+        },
+        {
+          "name": "items",
+          "label": "Questions",
+          "type": "group",
+          "group": "faq_item",
+          "repeatable": true
+        }
+      ]
+    },
+    {
+      "name": "stats",
+      "label": "Figures",
+      "kind": "block",
+      "category": "Data",
+      "description": "Big numbers in a row",
+      "fields": [
+        {
+          "name": "items",
+          "label": "Figures",
+          "type": "group",
+          "group": "stat",
+          "repeatable": true,
+          "repeat_max": 6
+        }
+      ]
+    },
+    {
+      "name": "code",
+      "label": "Code",
+      "kind": "block",
+      "category": "Text",
+      "description": "A code example - in a code editor with language and file name",
+      "fields": [
+        {
+          "name": "code",
+          "label": "Code",
+          "type": "code",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "spacer",
+      "label": "Spacer",
+      "kind": "block",
+      "category": "Layout",
+      "description": "Space or a line between blocks",
+      "fields": [
+        {
+          "name": "size",
+          "label": "Size",
+          "type": "enum",
+          "options": [
+            {
+              "value": "small",
+              "label": "Small"
+            },
+            {
+              "value": "medium",
+              "label": "Medium"
+            },
+            {
+              "value": "large",
+              "label": "Large"
+            },
+            {
+              "value": "line",
+              "label": "Line"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "showcase": [
+    {
+      "_type": "hero",
+      "title": "Every block type",
+      "text": "This page shows all blocks of the demo – each one a field group with its own template."
+    },
+    {
+      "_type": "media_text",
+      "image": "@image:1",
+      "media_position": "left",
+      "title": "Media & text",
+      "body": "An image next to a text. **Left or right** is chosen per block, and the image is cropped around its focal point.",
+      "button_label": "Read the docs",
+      "button_url": "{{url}}"
+    },
+    {
+      "_type": "media_text",
+      "image": "@image:2",
+      "media_position": "right",
+      "title": "And the other way round",
+      "body": "The same block type with the image on the right - and only 40 % wide (slider \"Image width\").",
+      "media_width": 40
+    },
+    {
+      "_type": "columns",
+      "columns": [
+        {
+          "content": [
+            {
+              "_type": "rich_text",
+              "body": "### Import\n\nExcel, CSV and ODS become typed tables."
+            }
+          ]
+        },
+        {
+          "content": [
+            {
+              "_type": "rich_text",
+              "body": "### Edit\n\nDrafts, working copies, revisions and locks."
+            }
+          ]
+        },
+        {
+          "content": [
+            {
+              "_type": "rich_text",
+              "body": "### Deliver\n\nA content API with filters, search and images."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_type": "columns",
+      "columns": [
+        {
+          "span": "8",
+          "content": [
+            {
+              "_type": "image",
+              "image": "@image:3",
+              "ratio": "3:2",
+              "width": "content"
+            },
+            {
+              "_type": "rich_text",
+              "body": "### Two thirds\n\nEach column picks its width on a grid of 12."
+            }
+          ]
+        },
+        {
+          "span": "4",
+          "content": [
+            {
+              "_type": "rich_text",
+              "body": "### One third\n\nUp to twelve columns per block.\n\n[Try it →]({{url}})"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_type": "columns",
+      "columns": [
+        {
+          "span": "7",
+          "content": [
+            {
+              "_type": "rich_text",
+              "body": "Each column can hold **blocks of its own** – text, images, quotes, code, figures or questions."
+            },
+            {
+              "_type": "quote",
+              "text": "Click a block in the preview to edit it – nested ones too.",
+              "author": "Live editing"
+            }
+          ]
+        },
+        {
+          "span": "5",
+          "content": [
+            {
+              "_type": "image",
+              "image": "@image:2",
+              "caption": "An image block in a column",
+              "width": "content"
+            },
+            {
+              "_type": "stats",
+              "items": [
+                {
+                  "value": "2",
+                  "label": "levels"
+                },
+                {
+                  "value": "∞",
+                  "label": "combinations"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_type": "stats",
+      "items": [
+        {
+          "value": "24",
+          "label": "field types"
+        },
+        {
+          "value": "13",
+          "label": "block types in this demo"
+        },
+        {
+          "value": "$0",
+          "label": "for small businesses"
+        }
+      ]
+    },
+    {
+      "_type": "quote",
+      "text": "Our editors build landing pages themselves now – and the developers only write one template per block.",
+      "author": "A happy agency",
+      "role": "somewhere in Europe"
+    },
+    {
+      "_type": "gallery",
+      "title": "Gallery",
+      "images": [
+        "@image:1",
+        "@image:2",
+        "@image:3",
+        "@image:4"
+      ],
+      "per_row": "4",
+      "ratio": "1:1",
+      "click": "lightbox"
+    },
+    {
+      "_type": "image",
+      "image": "@image:4",
+      "caption": "One image, wide",
+      "width": "wide"
+    },
+    {
+      "_type": "faq",
+      "title": "Questions",
+      "items": [
+        {
+          "question": "Can editors add their own block types?",
+          "answer": "Admins do: every **field group** can become a block type of a blocks field."
+        },
+        {
+          "question": "How does the website render them?",
+          "answer": "One template per block type – with the PHP SDK `BlockRenderer`, in Twig or as components in Nuxt and Next."
+        }
+      ]
+    },
+    {
+      "_type": "code",
+      "code": {
+        "language": "php",
+        "file": "page.php",
+        "code": "$page = $cms->entity('landing_pages')->where('slug', 'blocks')->first();\necho $renderer->render($page->blocks('content'));"
+      }
+    },
+    {
+      "_type": "video",
+      "url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+      "caption": "Any YouTube or Vimeo address"
+    },
+    {
+      "_type": "spacer",
+      "size": "line"
+    },
+    {
+      "_type": "call_to_action",
+      "title": "Build your own page",
+      "button_label": "Open the demo",
+      "button_url": "{{url}}"
+    }
+  ]
+}

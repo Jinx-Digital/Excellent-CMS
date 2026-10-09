@@ -1,0 +1,1 @@
+function e(e){let t=new Map;for(let n of e){let e=n.category?.trim()||null;t.set(e,[...t.get(e)??[],n])}return[...t.entries()].sort(([e],[t])=>e===null?1:t===null?-1:e.localeCompare(t)).map(([e,t])=>({category:e,items:t}))}function t(e){return[...new Set(e.map(e=>e.category?.trim()).filter(e=>!!e))].sort((e,t)=>e.localeCompare(t))}export{t as n,e as t};

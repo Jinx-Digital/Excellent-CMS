@@ -1,0 +1,30 @@
+code;name;name_de;parent
+001;World;Welt;
+019;Americas;Amerika;001
+021;"Northern America";"Nördliches Amerika";019
+013;"Central America";Mittelamerika;019
+029;Caribbean;Karibik;019
+005;"South America";Südamerika;019
+002;Africa;Afrika;001
+015;"Northern Africa";Nordafrika;002
+011;"Western Africa";Westafrika;002
+017;"Middle Africa";Zentralafrika;002
+014;"Eastern Africa";Ostafrika;002
+018;"Southern Africa";"Südliches Afrika";002
+150;Europe;Europa;001
+154;"Northern Europe";Nordeuropa;150
+155;"Western Europe";Westeuropa;150
+151;"Eastern Europe";Osteuropa;150
+039;"Southern Europe";Südeuropa;150
+142;Asia;Asien;001
+145;"Western Asia";Westasien;142
+143;"Central Asia";Zentralasien;142
+030;"Eastern Asia";Ostasien;142
+034;"Southern Asia";Südasien;142
+035;"Southeast Asia";Südostasien;142
+009;Oceania;Ozeanien;001
+053;Australasia;Australasien;009
+054;Melanesia;Melanesien;009
+057;"Micronesian Region";"Mikronesisches Inselgebiet";009
+061;Polynesia;Polynesien;009
+QO;"Outlying Oceania";"Äußeres Ozeanien";009

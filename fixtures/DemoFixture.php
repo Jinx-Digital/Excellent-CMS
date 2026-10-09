@@ -22,9 +22,10 @@ use App\Application\Service\UserService;
 use App\Repository\ProjectRepository;
 
 /**
- * Demo data to click through, two projects:
- *   Bibliothek     countries, authors, genres, languages and books, imported from resources/samples
- *                  like a user would do it, plus an editor and an API client
+ * Demo data to click through, two projects and the global area:
+ *   Global         regions, countries and languages - shared by all projects
+ *   Bibliothek     authors, genres and books, imported from resources/samples like a user would do it,
+ *                  plus an editor and an API client
  *  Role "Autor"    writes books and blog posts in both projects, with the user "Autorin"
  *   Dokumentation  the documentation of Excellent CMS (docs/): pages as a tree and a blog, in English,
  *                  with the field group SEO and project variables
@@ -65,7 +66,8 @@ final class DemoFixture extends Fixture
   }
 
   /**
-   * Project 1: a small library - countries, authors, genres, languages and books, all imported.
+   * Project 1: a small library - authors, genres and books, all imported; regions, countries and languages are
+   * global (area "Global", shared by all projects).
    */
   private function library(): iterable
   {
@@ -73,9 +75,19 @@ final class DemoFixture extends Fixture
     $this->useProject('bibliothek');
     yield 'Project Library: /api/v1/bibliothek/content, tables lib_*, languages en + de';
 
+    // Shared by all projects: regions, countries and languages in the area "Global"
+    $this->useProject('global');
     $result = $this->importCountries();
-    yield sprintf('  Regions: %d as a tree (world › continents › subregions)', $this->records->search($this->schema->get('regions'), '', [], null)->count());
-    yield sprintf('  Countries: %d (referencing their region)', $result['summary']['create']);
+    yield sprintf('  Global: regions %d as a tree (world › continents › subregions)', $this->records->search($this->schema->get('regions'), '', [], null)->count());
+    yield sprintf('  Global: countries %d (referencing their region)', $result['summary']['create']);
+    $result = $this->import('languages.csv', ['slug' => 'languages', 'name' => 'Languages', 'access' => 'public', 'label_field' => 'name'], [
+      'code' => ['label' => 'ISO code', 'unique' => true, 'required' => true],
+      'name' => ['unique' => true, 'required' => true],
+      'name_de' => ['label' => 'Name (German)'],
+      'native_name' => ['label' => 'Native name'],
+    ]);
+    yield sprintf('  Global: languages %d', $result['summary']['create']);
+    $this->useProject('bibliothek');
 
     $result = $this->import('authors.csv', ['slug' => 'authors', 'name' => 'Authors', 'access' => 'public', 'label_field' => 'name', 'trash' => true], [
       'name' => ['unique' => true, 'required' => true],
@@ -93,14 +105,6 @@ final class DemoFixture extends Fixture
     ]);
     yield sprintf('  Genres: %d', $result['summary']['create']);
 
-    $result = $this->import('languages.csv', ['slug' => 'languages', 'name' => 'Languages', 'access' => 'public', 'label_field' => 'name'], [
-      'code' => ['label' => 'ISO code', 'unique' => true, 'required' => true],
-      'name' => ['unique' => true, 'required' => true],
-      'name_de' => ['label' => 'Name (German)'],
-      'native_name' => ['label' => 'Native name'],
-    ]);
-    yield sprintf('  Languages: %d', $result['summary']['create']);
-
     $result = $this->import('books.csv', ['slug' => 'books', 'name' => 'Books', 'access' => 'oauth', 'label_field' => 'title', 'trash' => true], [
       'Title' => ['field' => 'title', 'label' => 'Title', 'required' => true],
       'Original title' => ['field' => 'original_title', 'label' => 'Original title'],
@@ -114,7 +118,7 @@ final class DemoFixture extends Fixture
     // The database numbers the books (1, 2, 3 ...)
     $books = $this->schema->get('books');
     $this->schema->addField($books->id, ['name' => 'number', 'label' => 'Number', 'type' => 'autoincrement']);
-    yield sprintf('  Books: %d (referencing author, genres and language)', $result['summary']['create']);
+    yield sprintf('  Books: %d (referencing author, genre and the global language)', $result['summary']['create']);
 
     $read = ['read' => true, 'create' => false, 'update' => false, 'delete' => false, 'import' => false];
     $permissions = ['books' => ['read' => true, 'create' => true, 'update' => true, 'delete' => false, 'import' => true]];
@@ -171,7 +175,7 @@ final class DemoFixture extends Fixture
 
   /**
    * Project 2: the documentation of Excellent CMS (docs/) - pages as a tree and a blog, English only,
-   * with the field group SEO and the variables {{url}} and {{api_url}}.
+   * with the field group SEO and the variables {{url}} (website), {{api_url}} and {{admin_url}} (demo).
    */
   private function documentation(): iterable
   {
@@ -182,10 +186,11 @@ final class DemoFixture extends Fixture
     $project = $this->currentProject->get();
     $this->projectService->updateVariables($project->id, [
       ['name' => 'url', 'value' => 'https://excellent.jinx-digital.com'],
-      ['name' => 'api_url', 'value' => 'https://demo.excellent.jinx-digital.com/api/v1'],
+      ['name' => 'api_url', 'value' => 'https://admin.demo.excellent.jinx-digital.com/api/v1'],
+      ['name' => 'admin_url', 'value' => 'https://admin.demo.excellent.jinx-digital.com'],
     ]);
     $this->useProject('docs');
-    yield 'Project Documentation: /api/v1/docs/content, tables docs_*, English, variables {{url}} and {{api_url}}';
+    yield 'Project Documentation: /api/v1/docs/content, tables docs_*, English, variables {{url}}, {{api_url}} and {{admin_url}}';
 
     $seo = $this->groups->create(['name' => 'seo', 'label' => 'SEO', 'category' => 'Meta', 'fields' => [
       ['name' => 'keywords', 'label' => 'Keywords', 'type' => 'string', 'length' => 50, 'repeatable' => true, 'repeat_max' => 10],
@@ -265,7 +270,7 @@ final class DemoFixture extends Fixture
       'title' => 'Home',
       'slug' => 'home',
       'content' => [
-        ['_type' => 'hero', 'title' => 'Content in real tables', 'text' => 'Import your spreadsheets, get a typed content API.', 'button_label' => 'Try the demo', 'button_url' => '{{url}}'],
+        ['_type' => 'hero', 'title' => 'Content in real tables', 'text' => 'Import your spreadsheets, get a typed content API.', 'button_label' => 'Try the demo', 'button_url' => '{{admin_url}}'],
         ['_type' => 'features', 'title' => 'What you get', 'items' => ['Import from Excel and CSV', 'Projects and languages', 'Drafts, working copies, revisions', 'Events and webhooks', 'Page builder with preview']],
         ['_type' => 'rich_text', 'body' => "Every block type has its fields like a field group: the website renders one template per block type.\n\nWith the PHP SDK: `\$page->blocks('content')`."],
         ['_type' => 'call_to_action', 'title' => 'Ready to start?', 'button_label' => 'Read the docs', 'button_url' => '{{url}}/#docs'],

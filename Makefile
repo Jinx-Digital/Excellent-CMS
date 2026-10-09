@@ -18,10 +18,9 @@ migrate: ## Apply pending migrations
 fixtures: ## Load the demo data (admin, editor, countries, authors, books, API client)
 	php yii fixtures:load dev
 
-db-reset: ## Drop all tables, re-run migrations and load the demo data
+db-reset: ## Drop all tables, re-run migrations
 	php bin/reset-db.php
 	$(MAKE) migrate
-	$(MAKE) fixtures
 
 test-db-reset: ## Recreate the test database with the test fixtures
 	php bin/reset-db.php excellent_cms_test

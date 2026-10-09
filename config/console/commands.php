@@ -7,6 +7,7 @@ use App\Console\Command\CreateAdminCommand;
 use App\Console\Command\DocsSyncCommand;
 use App\Console\Command\FixturesLoadCommand;
 use App\Console\Command\PluginsSyncCommand;
+use App\Console\Command\ProjectImportCommand;
 use App\Console\Command\ScheduleRunCommand;
 use App\Console\Command\SearchRebuildCommand;
 
@@ -22,6 +23,8 @@ return [
   'plugins:sync' => PluginsSyncCommand::class,
   // After every update: the documentation (docs/*.md) as pages of a project (default: docs)
   'docs:sync' => DocsSyncCommand::class,
+  // A project from an export folder (e.g. moving to a new installation)
+  'project:import' => ProjectImportCommand::class,
   // Demo/test data from fixtures/, dev/test only
   'fixtures:load' => FixturesLoadCommand::class,
 ];

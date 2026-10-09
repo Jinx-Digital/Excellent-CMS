@@ -101,6 +101,7 @@ build a web component with esbuild) before packing. The server never runs Compos
 | `richtext` | field type *Rich text (HTML)*: TipTap editor, cleaned HTML, images of the library, tables |
 | `geo` | field type *Map position (GPS)*: OpenStreetMap or Google Maps (API key in the settings), address search |
 | `user-field` | field type *User*: a user of the project, delivered as `{id, name}` |
+| `seo` | field group *SEO* (title, description, image, canonical, noindex), redirects (`/old` and `/blog/*`, 301/302/410, counted) and `sitemap.xml` of the published records; `ExcellentCms\Sdk\Seo` in the PHP SDK |
 | `forms` | forms as records of the entity "Forms" with a block editor (field blocks, columns), block "form", event source *Form submissions*, example "Contact" with event; templates render the forms for websites (`?render=html`) |
 - `StepRun`: `records`, `event`, `render($text, $index)` (placeholders and `$NAME`), `env()`, `progress()`,
   `postJson()`.

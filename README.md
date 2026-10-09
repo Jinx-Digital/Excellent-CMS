@@ -6,7 +6,9 @@ fields, and you get a typed database table, an admin UI to edit the records, and
 - **Backend:** PHP 8.4+ with [Yii3](https://www.yiiframework.com/) (`src/`, `config/`), MySQL 8
 - **Admin app:** [Nuxt](https://nuxt.com/) SPA with [Nuxt UI](https://ui.nuxt.com/) (`frontend/`)
 - **Languages:** the admin app and all messages of the API are in English and German (`Accept-Language`), see [Configuration](docs/configuration.md#translations)
-- **Website:** [excellent.jinx-digital.com](https://excellent.jinx-digital.com/), live demo: [demo.excellent.jinx-digital.com](https://demo.excellent.jinx-digital.com/)
+- **Website:** [excellent.jinx-digital.com](https://excellent.jinx-digital.com/) · live demo: admin app and API
+  [admin.demo.excellent.jinx-digital.com](https://admin.demo.excellent.jinx-digital.com/), a website built with it
+  (page builder, PHP SDK) [demo.excellent.jinx-digital.com](https://demo.excellent.jinx-digital.com/)
 
 ## Documentation
 

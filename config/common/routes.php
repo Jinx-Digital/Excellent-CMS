@@ -92,6 +92,8 @@ return [
       Route::post('/'.$project.'/oauth/token')->middleware(ProjectPathMiddleware::class)->action([OAuthController::class, 'token'])->name('v1.project.oauth.token'),
 
       // Admin app
+      // Web cron (servers without cron jobs): scheduled publishing and cleanup, protected by CRON_KEY
+      Route::methods(['GET', 'POST'], '/cron')->action([\App\Api\Controller\CronController::class, 'run'])->name('v1.cron'),
       Route::post('/auth/login')->action([AuthController::class, 'login'])->name('v1.auth.login'),
       Route::post('/auth/logout')->action([AuthController::class, 'logout'])->name('v1.auth.logout'),
       Route::post('/auth/password/forgot')->action([AccountController::class, 'forgotPassword'])->name('v1.auth.password.forgot'),

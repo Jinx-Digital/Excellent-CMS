@@ -7,8 +7,10 @@ order: 10
 
 ## Live demo
 
-**[demo.excellent.jinx-digital.com](https://demo.excellent.jinx-digital.com/)** runs with the [demo data](#demo-data): the projects
-“Library” (English and German) and “Documentation” (English).
+**[admin.demo.excellent.jinx-digital.com](https://admin.demo.excellent.jinx-digital.com/)** is the admin app and the API of the
+demo, with the [demo data](#demo-data): the projects “Library” (English and German) and “Documentation” (English).
+**[demo.excellent.jinx-digital.com](https://demo.excellent.jinx-digital.com/)** is a website made from it with the PHP SDK: the
+landing pages of the page builder (with preview and live editing from the admin app).
 
 | Role | E-mail | Password |
 | --- | --- | --- |
@@ -17,7 +19,7 @@ order: 10
 | Author (role *Autor*: writes books and blog posts and edits or deletes only her own, adds authors, reads the rest - no imports) | `autorin@example.com` | `autorin123` |
 
 The content API of the demo is public for countries and authors, e.g.
-[/api/v1/bibliothek/content/countries](https://demo.excellent.jinx-digital.com/api/v1/bibliothek/content/countries). Everybody shares the same
+[/api/v1/bibliothek/content/countries](https://admin.demo.excellent.jinx-digital.com/api/v1/bibliothek/content/countries). Everybody shares the same
 demo, so things may have been changed by others.
 
 ## Features
@@ -91,23 +93,29 @@ Log in with the admin account and import your first file under **Import**.
 ### Demo data
 
 To try things out, load the demo data instead of creating an admin. `make db-reset` **drops and recreates** the
-database from `.env`, runs the migrations and creates two projects. The library is imported from the sample files in
+database from `.env`, runs the migrations and creates two projects and the global entities. The library is imported from the sample files in
 `resources/samples` through the regular importer.
 
 ```bash
 make db-reset
 ```
 
-**Project “Library”** (`/api/v1/bibliothek/content`, tables `lib_*`):
+**Area “Global”** (tables `global_*`) - shared by all projects, readable in the content API of each one (e.g.
+`/api/v1/bibliothek/content/countries`), their schema is edited in the area “Global”:
 
 | Entity | Access | Content |
 | --- | --- | --- |
 | Regions | public | The 29 UN M49 regions as a tree: World › continents › subregions (e.g. Europe › Western Europe), in English and German |
 | Countries | public | All 249 ISO 3166 countries: English and German name, ISO-2/ISO-3/numeric code, region (reference), currency, EU membership |
-| Authors | public | 30 classic authors with dates of birth and death, country of birth (reference) and Wikipedia link |
-| Genres | public | 7 genres (novel, drama, poetry …) in English and German |
 | Languages | public | the 7 original languages of the books, with ISO code and native name |
-| Books | OAuth | 42 of the authors' best-known works with original title and year of first publication, references to author, genre and language, and a sequence number |
+
+**Project “Library”** (`/api/v1/bibliothek/content`, tables `lib_*`):
+
+| Entity | Access | Content |
+| --- | --- | --- |
+| Authors | public | 30 classic authors with dates of birth and death, country of birth (reference to the global countries) and Wikipedia link |
+| Genres | public | 7 genres (novel, drama, poetry …) in English and German |
+| Books | OAuth | 42 of the authors' best-known works with original title and year of first publication, references to author, genre and (global) language, and a sequence number |
 
 **Project “Documentation”** (`/api/v1/docs/content`, tables `docs_*`): the documentation of Excellent CMS itself,
 in English (the files of `docs/`, loaded with `./yii docs:sync`).
@@ -117,7 +125,7 @@ in English (the files of `docs/`, loaded with `./yii docs:sync`).
 | Pages | 14 documentation pages as a tree, with translatable title, slug, summary and Markdown text, and the field group SEO |
 | Blog | 3 release notes with date, repeatable tags and the field group SEO |
 
-Links in the texts use the project variables `{{url}}` and `{{api_url}}`.
+Links in the texts use the project variables `{{url}}` (the website), `{{api_url}}` and `{{admin_url}}` (the demo).
 
 Logins: `admin@example.com` / `admin123` (administrator, both projects) and `redaktion@example.com` / `redaktion123`
 (editor in the library: can edit and import books, and read everything else; role *Redakteur*), and

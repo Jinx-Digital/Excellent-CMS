@@ -6,9 +6,15 @@ order: 30
 ---
 # Deployment
 
-One package serves every installation - e.g. **cms.jinx-digital.com** (the Excellent website with its docs and
-plugin downloads, and jinx-digital) and **excellent.jinx-digital.com** (the demo behind
-demo.excellent.jinx-digital.com). Each has its own database, `.env`, `storage/` and `plugins/`.
+One package serves every installation - e.g. **cms.jinx-digital.com** (the content of the website
+excellent.jinx-digital.com with its docs and plugin downloads, and of jinx-digital) and
+**admin.demo.excellent.jinx-digital.com** (the demo with the demo data; its website demo.excellent.jinx-digital.com is the
+page builder demo of the PHP SDK). Each has its own database, `.env`, `storage/` and `plugins/`.
+
+For the demo, `DEMO_PREVIEW_URL` (`.env`) points the preview of the landing pages to the demo website, e.g.
+`https://demo.excellent.jinx-digital.com/page-builder.php?id={{id}}&token={{token}}`, before loading the demo data; the
+website gets `EXCELLENT_URL=https://admin.demo.excellent.jinx-digital.com` and
+`EXCELLENT_ADMIN_ORIGIN=https://admin.demo.excellent.jinx-digital.com` (live editing).
 
 ## Release package
 
@@ -104,11 +110,25 @@ counters:
 
 ## Cron jobs
 
+Events in **direct** mode need nothing (they run after the answer); queue mode needs the worker below.
+
 ```bash
 * * * * * cd /path/to/cms && php yii queue:run events     # events in queue mode
 * * * * * cd /path/to/cms && php yii schedule:run         # scheduled publishing
 0 * * * * cd /path/to/cms && php yii cleanup              # tokens, imports, unused files, locks
 ```
+
+**Without cron jobs** (shared hosting): set `CRON_KEY` in `.env` and let an outside service (e.g.
+[cron-job.org](https://cron-job.org), free) call `https://<cms>/api/v1/cron?key=<CRON_KEY>` every minute. It runs the
+scheduled publishing and, at most hourly, the cleanup. Use events in direct mode then (the queue needs the worker).
+
+## Moving a project
+
+`./yii project:import <folder> [--project=<slug>] [--as=<admin e-mail>]` creates a project from an export folder - e.g.
+of another installation, read through its API: `project.json`, `variables.json`, `groups.json`, `entities.json`,
+`records/<entity>.json` (records as `GET /api/v1/entities/{entity}/records/{id}` delivers them, with `_i18n`) and
+`media.json` with the files. Everything gets new ids; media fields, references (also in groups and translations) point
+to the new ones. The project must not have entities yet.
 
 ## Backups
 

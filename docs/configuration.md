@@ -28,6 +28,7 @@ dependency, so after `composer install --no-dev` you have to set them as real en
 | `MAILER_DSN` | Mail transport of [Symfony Mailer](https://symfony.com/doc/current/mailer.html#transport-setup), e.g. `smtp://user:pass@smtp.example.com:587`. Empty: mails are written to `runtime/logs/mail.log` instead. |
 | `MAILER_FROM`, `MAILER_FROM_NAME` | Sender of the mails |
 | `LOG_MAX_SIZE`, `LOG_MAX_FILES` | Rotation of `runtime/logs/app.log`: at this size in MB (default 10) it is moved to `app.log.1.gz`; the newest files are kept (default 5) |
+| `CRON_KEY` | Web cron for servers without cron jobs: `GET /api/v1/cron?key=…` runs the scheduled publishing and the hourly cleanup (at least 16 characters; empty: off), see [Deployment](deployment.md#cron-jobs) |
 
 ## Translations
 

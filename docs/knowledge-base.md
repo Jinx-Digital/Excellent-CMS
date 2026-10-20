@@ -16,6 +16,7 @@ solves one task from start to finish, with the schema, the events and what the w
 | [Syncing a shop by webhook](shop-sync.md) | Every change of a product reaches the shop: signed webhooks, secrets from the `.env`, the queue, retries. |
 | [Editorial review](editorial-workflow.md) | Authors write drafts, a reviewer approves them: a status field limited to a role, events that publish and send e-mails. |
 | [Shared data for several websites](global-data.md) | Countries, currencies or locations kept once in the area "Global" and used by every project. |
+| [Order confirmation with totals](order-confirmation.md) | The plugin "Script" computes subtotal, shipping, VAT and the delivery date of a new order - for the e-mail and the record. |
 | [Reusable event steps](reusable-events.md) | Steps several events share, kept in one event that the others start with values passed along. |
 
 **The common thread:** the CMS has few special cases. A form is a record, a message is a record, an author is a

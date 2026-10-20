@@ -57,24 +57,31 @@ works too: for guest authors, editors choose the profile by hand.
   "condition": { "author": { "null": true } },
   "steps": [
     {
+      "type": "find",
+      "entity": "authors",
+      "where": { "user": "{{record.created_by}}" },
+      "as": "author"
+    },
+    {
       "type": "update",
       "entity": "posts",
       "where": { "id": "{{record.id}}" },
-      "data": {
-        "author": { "_lookup": { "entity": "authors", "where": { "user": "{{record.created_by}}" } } }
-      }
+      "data": { "author": "{{author.id}}" }
     }
   ]
 }
 ```
 
 - `{{record.created_by}}` is the creator of the post: `user:<id>` for a CMS user, `client:<id>` for an API client.
-- `_lookup` finds the profile whose field `user` is that user and writes its id into `author` (the first one, if
-  two profiles point to the same account). The user field
-  understands `user:<id>`, so the value can be passed on as it is. No profile (or a post created by an API client):
+- **Find records** (`find`) looks for the profile whose field `user` is that user (the first one, if two profiles
+  point to the same account). The user field understands `user:<id>`, so the value can be passed on as it is.
+- The steps after it get the profile as `{{author.…}}`. `update` writes its id into the post, and further steps
+  can use the rest, e.g. an e-mail with `{{author.name}}`. No profile (or a post created by an API client):
   `author` stays empty.
 - The condition `{"author": {"null": true}}` leaves posts alone when the editor already chose an author.
-- *Test run* with an existing post shows which profile the lookup finds before anything is saved.
+- *Test run* with an existing post shows which profile the step finds before anything is saved.
+- Only the id is needed? `"author": {"_lookup": {"entity": "authors", "where": {"user": "{{record.created_by}}"}}}`
+  in the `update` step does the same without a step of its own.
 
 The change is saved as *Event: Author of new posts* in the revisions of the post, and editors can still pick a
 different author afterwards.
@@ -111,8 +118,9 @@ $posts = $cms->entity('posts')->where('author.slug', 'jane-doe')->orderByDesc('c
 
 ## Variations
 
-- **Several authors:** make `author` repeatable and use `"all": true` in the lookup when it should collect several
-  profiles, e.g. all profiles of a team: `{"_lookup": {"entity": "authors", "where": {"team": "{{record.team}}"}, "all": true}}`.
+- **Several authors:** make `author` repeatable, find all profiles of a team with `"all": true`
+  (`{"type": "find", "entity": "authors", "where": {"team": "{{record.team}}"}, "as": "team", "all": true}`) and
+  pass their ids on, e.g. with the plugin *Script*: `set ids = team.map(it.id)`, then `"author": "{{ids}}"`.
 - **"Last edited by":** a second reference `editor` and an event on `update` with `{{record.updated_by}}`.
 - **Notify the author:** an `email` step with `"to": "{{record.created_by}}"` mails the creator of a record,
   for example when a reviewer publishes it (action `publish`).

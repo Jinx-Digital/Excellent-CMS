@@ -398,4 +398,48 @@ class EventTest extends ApiTestCase
     $tested = $this->api('POST', "/admin/events/{$log['id']}/test", ['record' => '{"title": "skip"}'], $admin, $here)['body']['data'];
     $this->assertFalse($tested['matches']);
   }
+
+  public function testFindPassesRecordsToTheNextSteps(): void
+  {
+    $admin = $this->login();
+    $adminId = $this->api('GET', '/auth/me', token: $admin)['body']['data']['user']['id'];
+    $project = 'f'.bin2hex(random_bytes(4));
+    $this->api('POST', '/admin/projects', ['name' => 'Blog', 'slug' => $project, 'table_prefix' => $project.'_'], $admin);
+    $here = ['X-Project' => $project];
+    $this->api('POST', '/admin/entities', ['slug' => 'authors', 'name' => 'Autoren', 'drafts' => true, 'fields' => [['name' => 'name', 'type' => 'string'], ['name' => 'account', 'type' => 'string']]], $admin, $here);
+    $this->api('POST', '/admin/entities', ['slug' => 'posts', 'name' => 'Beiträge', 'fields' => [['name' => 'title', 'type' => 'string'], ['name' => 'byline', 'type' => 'string'], ['name' => 'team', 'type' => 'string']]], $admin, $here);
+    $this->api('POST', '/entities/authors/records', ['name' => 'Admin', 'account' => 'user:'.$adminId, 'draft' => true], $admin, $here);
+    $this->api('POST', '/entities/authors/records', ['name' => 'Gast', 'account' => 'guest'], $admin, $here);
+
+    $step = ['type' => 'find', 'entity' => 'authors', 'where' => ['account' => '{{record.created_by}}']];
+    foreach ([$step, $step + ['as' => 'record'], $step + ['as' => 'a b'], ['as' => 'x', 'where' => []] + $step] as $wrong) {
+      $this->assertSame(422, $this->api('POST', '/admin/events', ['name' => 'X', 'entity' => 'posts', 'actions' => ['create'], 'steps' => [$wrong]], $admin, $here)['status'], json_encode($wrong));
+    }
+    $event = $this->api('POST', '/admin/events', ['name' => 'Byline', 'entity' => 'posts', 'actions' => ['create'], 'steps' => [
+      $step + ['as' => 'author'],
+      ['type' => 'find', 'entity' => 'authors', 'where' => ['name' => ['like' => 'a']], 'as' => 'everyone', 'all' => true],
+      ['type' => 'update', 'entity' => 'posts', 'where' => ['id' => '{{record.id}}'], 'data' => ['byline' => 'von {{author.name}}', 'team' => '{{everyone[0].name}}, {{everyone[1].name}}']],
+    ]], $admin, $here);
+    $this->assertSame(200, $event['status'], json_encode($event['body'], JSON_UNESCAPED_UNICODE));
+
+    // Drafts are found too; nothing found: empty
+    $post = $this->api('POST', '/entities/posts/records', ['title' => 'Hallo'], $admin, $here)['body']['data'];
+    $saved = $this->api('GET', "/entities/posts/records/{$post['id']}", token: $admin, headers: $here)['body']['data'];
+    $this->assertSame(['von Admin', 'Admin, Gast'], [$saved['byline'], $saved['team']]);
+    $this->api('PUT', '/admin/events/'.$event['body']['data']['id'], ['steps' => [
+      ['type' => 'find', 'entity' => 'authors', 'where' => ['account' => 'nobody'], 'as' => 'author'],
+      ['type' => 'update', 'entity' => 'posts', 'where' => ['id' => '{{record.id}}'], 'data' => ['byline' => 'von {{author.name}}']],
+    ]], $admin, $here);
+    $other = $this->api('POST', '/entities/posts/records', ['title' => 'Ohne'], $admin, $here)['body']['data'];
+    $this->assertSame('von', $this->api('GET', "/entities/posts/records/{$other['id']}", token: $admin, headers: $here)['body']['data']['byline']);
+
+    // Test run: what it finds, and the next steps use it
+    $this->api('PUT', '/admin/events/'.$event['body']['data']['id'], ['steps' => [
+      $step + ['as' => 'author'],
+      ['type' => 'update', 'entity' => 'posts', 'where' => ['id' => '{{record.id}}'], 'data' => ['byline' => 'von {{author.name}}']],
+    ]], $admin, $here);
+    $test = $this->api('POST', '/admin/events/'.$event['body']['data']['id'].'/test', ['record' => $post['id']], $admin, $here)['body']['data'];
+    $this->assertSame('Admin', $test['steps'][0]['preview'][0]['name'] ?? null);
+    $this->assertSame('von Admin', $test['steps'][1]['preview'][0]['data']['byline']);
+  }
 }

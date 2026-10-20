@@ -25,6 +25,10 @@ On a machine with Node 22+ and Composer:
 make release        # builds the admin app, then runtime/release/excellent-cms-<version>.tar.gz
 ```
 
+The version is the git tag. A new version in one go: `make tag version=0.9.2` checks that the working tree is clean
+and `master` is the same as on GitHub, tags, runs `make release`, pushes the tag and - with the GitHub CLI (`gh`) -
+creates the GitHub release with the package. If the build fails, the tag is removed again and nothing is pushed.
+
 The package holds the API, the built admin app (`public/` - not in the repository, every package builds it anew),
 migrations, sample data, docs and the Composer libraries for production - no tests, sources of the admin app, `.env` or data. The server needs PHP 8.4 (intl, pdo_mysql, gd,
 zip, mbstring) and MySQL 8, no Node or Composer.

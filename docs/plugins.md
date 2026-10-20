@@ -76,7 +76,7 @@ final class Plugin implements PluginInterface
 
 | Method | Adds |
 | --- | --- |
-| `eventStep($key, $label, fields, handler)` | a step for events (`<plugin>.<key>`), with a form in the event editor |
+| `eventStep($key, $label, fields, handler, preview, validate)` | a step for events (`<plugin>.<key>`), with a form in the event editor. `preview` is what a test run shows, `validate` returns the problems of the step when the event is saved (e.g. the syntax of a script) |
 | `fieldType($key, $label, component, toStorage, fromStorage, present, text, mediaIds, config)` | a field type (`<plugin>.<key>`) for entities and field groups (blocks too). The hooks check and convert values, shape the output (e.g. fresh image addresses), feed the search and report the files they use. The admin app shows the plugin's **web component**: an ES module of its `assets/` that gets `value`, `config`, `disabled`, `field` and `host` (`pickMedia()`, `api()`, `locale()`) and sends `change` events. Without the active plugin, values are kept and delivered as stored. |
 | `storageType($type, $label, fields, factory)` | a type of storage (Administration › Storages), whose factory returns the Flysystem adapter |
 | `route($method, $path, handler, admin)` | `/api/v1/plugins/<plugin>/api/<path>` for signed-in users (or admins only) |
@@ -106,8 +106,10 @@ build a web component with esbuild) before packing. The server never runs Compos
 
 The ZIPs of these plugins are downloads on [excellent.jinx-digital.com/plugins](https://excellent.jinx-digital.com/plugins).
 
-- `StepRun`: `records`, `event`, `render($text, $index)` (placeholders and `$NAME`), `env()`, `progress()`,
-  `postJson()`.
+- `StepRun`: `records`, `contexts` (the placeholders per record), `event`, `render($text, $index)` (placeholders and
+  `$NAME`), `env()`, `progress()`, `postJson()`, and `pass($index, $values)`: values the next steps of the run get for
+  that record. `"record"` replaces the record (`{{record.…}}`), every other key is a placeholder of its own
+  (`{{names[0]}}`). They are saved with the run, so a retry has them too, and webhooks send them as `vars`.
 - `PluginContext`: `setting()`, `settings()`, `db` (the database), `path`, `trigger()` (events of its sources),
   `sign()` / `verify()` (values signed with a key of the plugin, e.g. tokens of forms), `log()` (the log of the CMS).
 - `PluginResponse::xml()` / `::text()`: a route answers with something else than JSON (e.g. a sitemap).

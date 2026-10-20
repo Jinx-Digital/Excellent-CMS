@@ -57,11 +57,20 @@ files (`./yii cleanup`) starts no events.
   their values). The service behind it (`EnvVariables`) is meant for every setting that needs secrets.
   - `create` `{entity, data}`, `update` `{entity, where, data}`, `delete` `{entity, where}`: per record; `where`
     is a filter.
+  - `find` `{entity, where, as, all?}`: per record of the run, the first record of `entity` that matches `where`
+    (drafts too, every field). The next steps get it as `{{<as>.<field>}}`, e.g. with `"as": "author"` and
+    `"where": {"user": "{{record.created_by}}"}` the name of the author is `{{author.name}}`. Nothing found: empty.
+    With `"all": true` it is a list of at most 100 (`{{authors[0].name}}`), e.g. for `each` in a script. It only
+    reads.
   - `event` `{event, data?}`: starts an event of the source `event` (*Started by other events*) with the records of
     this run. `data` adds values to each of them, with placeholders, e.g. `{"note": "from {{event.name}}"}` - in the
     started event they are `{{record.note}}` next to the fields of the record. Its condition is checked on that, and
     it runs one level deeper in the chain.
-- **Lookups:** a value `{"_lookup": {"entity": "authors", "where": {"user": "{{record.created_by}}"}}}` in `data`
+- **Values of earlier steps:** steps of plugins can pass values on to the steps after them, e.g. the step *Modify
+  values* of the plugin *script*: `set record.short = record.name.split().first().uppercase()` makes
+  `{{record.short}}`, `set names = record.name.split()` makes `{{names[0]}}`, `{{names[1]}}`. Items of lists are
+  written `{{names[0]}}` or `{{names.0}}`.
+- **Lookups:** for just the id, without a step of its own: a value `{"_lookup": {"entity": "authors", "where": {"user": "{{record.created_by}}"}}}` in `data`
   or `where` is the id of the first record that matches the filter (`null`: none). With `"all": true` it is the list
   of the ids of all matches, e.g. for a repeatable reference. Example: [Blog with author profiles](blog-authors.md).
 - **Placeholders:** `{{record.title}}`, `{{record.image.url}}`, `{{record.created_by}}` /

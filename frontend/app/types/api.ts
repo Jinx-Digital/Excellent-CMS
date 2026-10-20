@@ -183,7 +183,7 @@ export interface CustomFieldInfo {
 export interface PluginField {
   key: string
   label: string
-  kind: 'text' | 'secret' | 'textarea' | 'select' | 'bool'
+  kind: 'text' | 'secret' | 'textarea' | 'code' | 'select' | 'bool'
   required?: boolean
   placeholder?: string
   help?: string

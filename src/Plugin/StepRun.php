@@ -14,6 +14,9 @@ use App\Infrastructure\Webhook\WebhookSender;
  */
 final class StepRun
 {
+  /** @var array<int, array<string, mixed>> values for the next steps, per record (see pass()) */
+  private array $passed = [];
+
   /**
    * @param array<string, mixed> $event the event (name, action …)
    * @param list<array<string, mixed>> $records
@@ -45,6 +48,37 @@ final class StepRun
   public function env(?string $value): string
   {
     return $this->env->resolve($value);
+  }
+
+  /**
+   * Values the next steps of the run get for the record of index $index: "record" replaces the
+   * record ({{record.…}}), every other key is a placeholder of its own ({{names[0]}}).
+   *
+   * @param array<string, mixed> $values
+   */
+  public function pass(int $index, array $values): void
+  {
+    $this->passed[$index] = $values + ($this->passed[$index] ?? []);
+  }
+
+  /**
+   * @internal the records with what the step passed on
+   * @param list<array<string, mixed>> $records
+   * @return list<array<string, mixed>>
+   */
+  public function apply(array $records): array
+  {
+    foreach ($this->passed as $index => $values) {
+      if (!isset($records[$index])) {
+        continue;
+      }
+      if (array_key_exists('record', $values)) {
+        $records[$index]['data'] = $values['record'];
+      }
+      unset($values['record']);
+      $records[$index]['vars'] = $values + (array)($records[$index]['vars'] ?? []);
+    }
+    return $records;
   }
 
   public function progress(int $done, int $total): void

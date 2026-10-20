@@ -63,6 +63,7 @@ export default defineNuxtConfig({
   // Vite bundles it anew and open tabs fail to load the old files
   vite: {
     optimizeDeps: {
+      exclude: ['@nuxtjs/i18n'],
       include: [
         'codemirror', '@codemirror/state', '@codemirror/view', '@codemirror/commands', '@codemirror/language',
         '@codemirror/lang-html', '@codemirror/lang-css', '@codemirror/lang-javascript', '@codemirror/lang-php',

@@ -7,6 +7,7 @@ namespace App\Application\Event;
 /**
  * Placeholders in the steps of an event: {{record.title}}, {{old.price}}, {{record.image.url}},
  * {{event.name}}, {{event.action}}, {{project.url}} or {{url}} (project variables), {{count}}.
+ * Items of lists: {{names[0]}} (the same as {{names.0}}).
  *
  * A value that is only a placeholder keeps its type ("{{record.price}}" -> 12.5, a list stays a
  * list); placeholders inside text are written into it (lists and objects as JSON). Unknown ones
@@ -14,7 +15,7 @@ namespace App\Application\Event;
  */
 final class Template
 {
-  private const PLACEHOLDER = '/\{\{\s*([a-z_][a-z0-9_]*(?:\.[a-z0-9_]+)*)\s*\}\}/i';
+  private const PLACEHOLDER = '/\{\{\s*([a-z_][a-z0-9_]*(?:\.[a-z0-9_]+|\[\d+\])*)\s*\}\}/i';
 
   /**
    * @param array<string, mixed> $context
@@ -27,7 +28,7 @@ final class Template
     if (!is_string($value)) {
       return $value;
     }
-    if (1 === preg_match('/^\s*\{\{\s*([a-z_][a-z0-9_]*(?:\.[a-z0-9_]+)*)\s*\}\}\s*$/i', $value, $match)) {
+    if (1 === preg_match('/^\s*\{\{\s*([a-z_][a-z0-9_]*(?:\.[a-z0-9_]+|\[\d+\])*)\s*\}\}\s*$/i', $value, $match)) {
       return self::lookup($context, $match[1]);
     }
     return (string)preg_replace_callback(self::PLACEHOLDER, static function (array $match) use ($context): string {
@@ -43,6 +44,7 @@ final class Template
 
   private static function lookup(array $context, string $path): mixed
   {
+    $path = (string)preg_replace('/\[(\d+)\]/', '.$1', $path);
     // {{url}} is {{project.url}}, as in text values
     if (!str_contains($path, '.') && !array_key_exists($path, $context) && is_array($context['project'] ?? null) && array_key_exists($path, $context['project'])) {
       return $context['project'][$path];

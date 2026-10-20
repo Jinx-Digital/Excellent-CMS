@@ -21,6 +21,7 @@ final class PluginStep
     public readonly array $fields,
     public readonly \Closure $handler,
     public readonly ?\Closure $preview = null,
+    public readonly ?\Closure $validate = null,
   ) {
   }
 
@@ -43,7 +44,8 @@ final class PluginStep
         $errors[] = sprintf('"%s": "%s" is no option.', $field['label'] ?? $key, (string)$value);
       }
     }
-    return $errors;
+    // The plugin's own checks, e.g. the syntax of a script
+    return null !== $this->validate ? [...$errors, ...array_map('strval', ($this->validate)($step))] : $errors;
   }
 
   public function toArray(): array

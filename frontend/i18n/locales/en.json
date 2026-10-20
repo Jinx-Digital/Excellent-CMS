@@ -276,7 +276,11 @@
       "noExecutable": "No event can be started yet - create one with the source \"Started by other events\".",
       "passData": "Additional values",
       "passDataHelp": "Added to every record - in the started event as {'{{'}record.<name>{'}}'}. The placeholders of this event work here.",
-      "valueName": "name"
+      "valueName": "name",
+      "as": "Available as",
+      "asHelp": "Name of the placeholder, e.g. author → {'{{'}author.name{'}}'} in the next steps",
+      "findAll": "All that match",
+      "findAllHelp": "A list of at most 100 - {'{{'}authors[0].name{'}}'}. Otherwise the first one (empty if none)."
     },
     "empty": "No events yet.",
     "entity": "Entity",
@@ -324,7 +328,8 @@
       "email": "E-mail",
       "update": "Update",
       "webhook": "Webhook",
-      "event": "Start event"
+      "event": "Start event",
+      "find": "Find records"
     },
     "stepsHelp": "Several steps run one after the other; the first error stops the run.",
     "stepsLabel": "Steps (JSON)",

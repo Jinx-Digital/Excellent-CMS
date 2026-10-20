@@ -470,4 +470,5 @@ return [
   'An event cannot start itself.' => 'Ein Event kann sich nicht selbst starten.',
   '"{key}" must be an object.' => '„{key}“ muss ein Objekt sein.',
   'Please enter the values as JSON object, e.g. {"title": "Test"}.' => 'Bitte gib die Werte als JSON-Objekt ein, z. B. {"title": "Test"}.',
+  '"as": a name for the placeholder (letters, digits, _), e.g. "author" for author.name - not record, old, event, project or count.' => '„as“: ein Name für den Platzhalter (Buchstaben, Ziffern, _), z. B. „author“ für author.name – nicht record, old, event, project oder count.',
 ];

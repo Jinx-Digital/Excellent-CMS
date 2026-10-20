@@ -1,4 +1,4 @@
-.PHONY: help serve dev dev-frontend migrate fixtures db-reset test test-db-reset cs generate release update plugin-zip
+.PHONY: help serve dev dev-frontend migrate fixtures db-reset test test-db-reset cs generate release tag update plugin-zip
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-16s %s\n", $$1, $$2}'
@@ -18,9 +18,10 @@ migrate: ## Apply pending migrations
 fixtures: ## Load the demo data (admin, editor, countries, authors, books, API client)
 	php yii fixtures:load dev
 
-db-reset: ## Drop all tables, re-run migrations
+db-reset: ## Drop all tables, re-run migrations and load the demo data
 	php bin/reset-db.php
 	$(MAKE) migrate
+	$(MAKE) fixtures
 
 test-db-reset: ## Recreate the test database with the test fixtures
 	php bin/reset-db.php excellent_cms_test
@@ -41,6 +42,10 @@ generate: ## Build the admin app as static files into public (next to public/api
 
 release: generate ## One package for every installation: runtime/release/excellent-cms-<version>.tar.gz (see docs/deployment.md)
 	sh bin/release.sh
+
+tag: ## A new version (version=0.9.2): checks, tag, make release, push the tag, GitHub release with the package (with gh)
+	@test -n "$(version)" || (echo "Usage: make tag version=<x.y.z>"; exit 1)
+	sh bin/tag.sh $(version)
 
 update: ## On a server after unpacking a new version: migrations, plugin blocks, search index
 	php yii migrate:up --no-interaction

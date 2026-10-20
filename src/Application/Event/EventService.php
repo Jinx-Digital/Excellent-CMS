@@ -19,7 +19,7 @@ use App\Shared\Id;
  */
 final class EventService
 {
-  public const STEPS = ['webhook', 'email', 'create', 'update', 'delete', 'event'];
+  public const STEPS = ['webhook', 'email', 'create', 'update', 'delete', 'find', 'event'];
   public const MODES = ['direct', 'queue'];
 
   public function __construct(
@@ -401,7 +401,10 @@ final class EventService
         if (in_array($type, ['create', 'update'], true) && (!is_array($step['data'] ?? null) || [] === $step['data'])) {
           $errors[] = I18n::t('"{key}" is missing.', ['key' => 'data']);
         }
-        if (in_array($type, ['update', 'delete'], true) && (!is_array($step['where'] ?? null) || [] === $step['where'])) {
+        if ('find' === $type && (1 !== preg_match('/^[a-z_][a-z0-9_]{0,39}$/i', (string)($step['as'] ?? '')) || in_array($step['as'], ['record', 'old', 'event', 'project', 'count'], true))) {
+          $errors[] = I18n::t('"as": a name for the placeholder (letters, digits, _), e.g. "author" for author.name - not record, old, event, project or count.');
+        }
+        if (in_array($type, ['update', 'delete', 'find'], true) && (!is_array($step['where'] ?? null) || [] === $step['where'])) {
           $errors[] = I18n::t('"{key}" is missing.', ['key' => 'where']);
         }
         foreach (self::lookups([$step['data'] ?? null, $step['where'] ?? null]) as $lookup) {

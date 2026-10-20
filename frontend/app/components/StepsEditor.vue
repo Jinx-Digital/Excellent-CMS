@@ -27,6 +27,7 @@ const TYPES = [
   { type: 'create', icon: 'i-lucide-plus' },
   { type: 'update', icon: 'i-lucide-pencil' },
   { type: 'delete', icon: 'i-lucide-trash-2' },
+  { type: 'find', icon: 'i-lucide-search' },
   { type: 'event', icon: 'i-lucide-zap' }
 ]
 // Steps of the active plugins ("<plugin>.<step>"): their form follows the fields they describe
@@ -77,6 +78,7 @@ function add(type: string) {
     create: { type, entity: '', data: {} },
     update: { type, entity: '', where: { id: '' }, data: {} },
     delete: { type, entity: '', where: { id: '' } },
+    find: { type, entity: '', where: { id: '' }, as: '', all: false },
     event: { type, event: '', data: {} }
   }
   const plugin = pluginStep(type)
@@ -261,7 +263,7 @@ async function copy(text: string) {
             <UCheckbox :id="`step-${index}-email-digest`" :model-value="!!step.digest" :label="$t('events.editor.digest')" @update:model-value="set(index, 'digest', !!$event)" />
           </div>
 
-          <div v-if="['create', 'update', 'delete'].includes(String(step.type))" class="grid gap-3">
+          <div v-if="['create', 'update', 'delete', 'find'].includes(String(step.type))" class="grid gap-3">
             <UFormField :label="$t('events.entity')" required>
               <USelect :model-value="String(step.entity ?? '') || undefined" :items="entityItems" :placeholder="$t('fields.chooseEntity')" class="w-full sm:w-72" @update:model-value="set(index, 'entity', $event)" />
             </UFormField>
@@ -277,6 +279,13 @@ async function copy(text: string) {
                 </div>
               </UFormField>
             </template>
+            <!-- find: what it found is a placeholder of the next steps -->
+            <div v-if="step.type === 'find'" class="grid gap-3 sm:grid-cols-2">
+              <UFormField :label="$t('events.editor.as')" :help="$t('events.editor.asHelp')" required>
+                <UInput :model-value="String(step.as ?? '')" placeholder="author" class="font-mono w-full" @update:model-value="set(index, 'as', String($event).trim())" />
+              </UFormField>
+              <UCheckbox :id="`step-${index}-find-all`" class="sm:mt-7" :model-value="!!step.all" :label="$t('events.editor.findAll')" :description="$t('events.editor.findAllHelp')" @update:model-value="set(index, 'all', !!$event)" />
+            </div>
           </div>
 
           <div v-if="step.type === 'event'" class="grid gap-3">
@@ -301,6 +310,8 @@ async function copy(text: string) {
               <UCheckbox v-if="field.kind === 'bool'" :model-value="!!step[field.key]" :label="field.label" :description="field.help" @update:model-value="set(index, field.key, !!$event)" />
               <UFormField v-else :label="field.label" :help="field.help" :required="field.required">
                 <USelect v-if="field.kind === 'select'" :model-value="String(step[field.key] ?? '')" :items="field.options ?? []" class="w-full" @update:model-value="set(index, field.key, $event)" />
+                <!-- Code (e.g. a script): monospace, Tab indents -->
+                <CodeEditor v-else-if="field.kind === 'code'" :model-value="String(step[field.key] ?? '')" language="text" :placeholder="field.placeholder" min-height="8rem" max-height="28rem" class="w-full" @update:model-value="set(index, field.key, $event)" />
                 <UTextarea v-else-if="field.kind === 'textarea'" :model-value="String(step[field.key] ?? '')" :placeholder="field.placeholder" autoresize :rows="3" class="w-full" @update:model-value="set(index, field.key, $event)" />
                 <EnvInput v-else inline :model-value="String(step[field.key] ?? '')" :placeholder="field.placeholder" @update:model-value="set(index, field.key, $event)" />
               </UFormField>

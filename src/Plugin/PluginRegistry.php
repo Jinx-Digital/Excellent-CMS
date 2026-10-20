@@ -55,15 +55,16 @@ final class PluginRegistry
    * @param list<array<string, mixed>> $fields
    * @param \Closure(array<string, mixed>, StepRun): void $handler runs the step - throws on failure
    * @param (\Closure(array<string, mixed>, StepRun): mixed)|null $preview what a test run shows
+   * @param (\Closure(array<string, mixed>): list<string>)|null $validate problems of the step when the event is saved
    */
-  public function eventStep(string $key, string $label, array $fields, \Closure $handler, string $description = '', string $icon = 'i-lucide-puzzle', ?\Closure $preview = null): void
+  public function eventStep(string $key, string $label, array $fields, \Closure $handler, string $description = '', string $icon = 'i-lucide-puzzle', ?\Closure $preview = null, ?\Closure $validate = null): void
   {
     $plugin = $this->plugin ?? throw new InvalidArgumentException('No plugin is registering.');
     if (1 !== preg_match('/^[a-z][a-z0-9_]{0,39}$/', $key)) {
       throw new InvalidArgumentException(sprintf('Plugin "%s": "%s" is no valid step key (a-z, 0-9, _).', $plugin, $key));
     }
     $type = $plugin.'.'.$key;
-    $this->steps[$type] = new PluginStep($plugin, $type, $label, $description, $icon, array_values($fields), $handler, $preview);
+    $this->steps[$type] = new PluginStep($plugin, $type, $label, $description, $icon, array_values($fields), $handler, $preview, $validate);
   }
 
   /**

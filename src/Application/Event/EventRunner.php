@@ -30,6 +30,8 @@ use Throwable;
  *   create   {entity, data}                 a record per record of the run
  *   update   {entity, where, data}          the records that match "where" (filter), per record of the run
  *   delete   {entity, where}                the same, into the trash or deleted
+ *   find     {entity, where, as, all?}      per record, the first record that matches (all: a list, at most 100) -
+ *                                          the next steps get it as {{<as>.<field>}}
  *   event    {event, data?}                 starts an event of the source "event" with the records of the run
  *                                          ("data": values added to each of them, with placeholders)
  * Values may use placeholders (see Template). In "data" and "where" of create/update/delete, a value
@@ -53,6 +55,7 @@ final class EventRunner
     private \App\Application\Service\EnvVariables $secrets,
     private ?\App\Plugin\PluginManager $plugins = null,
     private ?\App\Repository\UserRepository $users = null,
+    private ?\App\Application\Content\RecordPresenter $presenter = null,
   ) {
   }
 
@@ -81,8 +84,8 @@ final class EventRunner
     $origin = array_merge((array)json_decode((string)($run['origin'] ?? '[]'), true), [(string)$event['id']]);
 
     // The runs its steps start are created within the chain: one level deeper, with its origin
-    $next = $this->dispatcher->within((int)$run['depth'] + 1, $origin, function () use ($runId, $event, $project, $records, $steps, &$progress, &$failed): array {
-      $this->actor->as('event:'.$event['id'], function () use ($runId, $event, $project, $records, $steps, &$progress, &$failed): void {
+    $next = $this->dispatcher->within((int)$run['depth'] + 1, $origin, function () use ($runId, $event, $project, &$records, $steps, &$progress, &$failed): array {
+      $this->actor->as('event:'.$event['id'], function () use ($runId, $event, $project, &$records, $steps, &$progress, &$failed): void {
         foreach ($steps as $index => $step) {
           if ('done' === ($progress[$index]['status'] ?? null)) {
             continue;
@@ -91,12 +94,17 @@ final class EventRunner
           $progress[$index] = ['type' => (string)($step['type'] ?? ''), 'status' => 'running', 'done' => 0, 'total' => 0, 'error' => null];
           $this->events->updateRun($runId, ['steps' => json_encode($progress)]);
           try {
+            $before = $records;
             $this->step((array)$step, $event, $project, $records, function (int $done, int $total) use ($runId, $index, &$progress): void {
               $progress[$index]['done'] = $done;
               $progress[$index]['total'] = $total;
               $this->events->updateRun($runId, ['steps' => json_encode($progress)]);
             });
             $progress[$index]['status'] = 'done';
+            // Values a step passed on (plugins, StepRun::pass()) stay for the next steps and retries
+            if ($records !== $before) {
+              $this->events->updateRun($runId, ['records' => json_encode($records, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION)]);
+            }
           } catch (Throwable $e) {
             $progress[$index]['status'] = 'failed';
             $progress[$index]['error'] = self::message($e);
@@ -142,6 +150,11 @@ final class EventRunner
         'email' => array_map(fn(array $ctx): array => ['to' => implode(', ', $this->recipients(Template::render($step['to'] ?? '', $ctx))), 'subject' => Template::render($step['subject'] ?? '', $ctx), 'body' => Template::render($step['body'] ?? '', $ctx)], ($step['digest'] ?? false) ? array_slice($contexts, 0, 1) : $contexts),
         'create', 'update' => array_map(fn(array $ctx): array => ['entity' => $step['entity'] ?? null, 'where' => $this->fill($step['where'] ?? null, $ctx), 'data' => $this->fill($step['data'] ?? [], $ctx)], $contexts),
         'delete' => array_map(fn(array $ctx): array => ['entity' => $step['entity'] ?? null, 'where' => $this->fill($step['where'] ?? null, $ctx)], $contexts),
+        'find' => (function () use ($step, $event, $project, &$records): array {
+          // Read only - and the next steps of the test run see what it found
+          $records = $this->found($step, $event, $project, $records);
+          return array_map(static fn(array $record): mixed => $record['vars'][(string)($step['as'] ?? '')] ?? null, array_slice($records, 0, 3));
+        })(),
         'event' => ['event' => $this->events->find((string)($step['event'] ?? ''), $project->id)['name'] ?? null, 'records' => array_map(fn(array $record, array $ctx): array => $this->passed($step, $record, $ctx)['data'], array_slice($records, 0, 3), array_slice($contexts, 0, 3))],
         default => $this->pluginPreview($step, $event, $records, $contexts),
       }];
@@ -152,7 +165,7 @@ final class EventRunner
   /**
    * @param callable(int, int): void $progress
    */
-  private function step(array $step, array $event, $project, array $records, callable $progress): void
+  private function step(array $step, array $event, $project, array &$records, callable $progress): void
   {
     $type = (string)($step['type'] ?? '');
     $count = count($records);
@@ -221,6 +234,12 @@ final class EventRunner
         }
         return;
 
+      case 'find':
+        $progress(0, $count);
+        $records = $this->found($step, $event, $project, $records);
+        $progress($count, $count);
+        return;
+
       case 'event':
         $target = $this->events->find((string)($step['event'] ?? ''), $project->id);
         if (null === $target || 'event' !== ($target['source'] ?? null)) {
@@ -239,7 +258,9 @@ final class EventRunner
     $pluginStep = $this->plugins?->registry()->step($type);
     if (null !== $pluginStep) {
       $contexts = array_map(fn(array $record): array => $this->context($event, $project, $record, $count), $records);
-      ($pluginStep->handler)($step, $this->pluginRun($pluginStep, $event, $records, $contexts, $progress));
+      $run = $this->pluginRun($pluginStep, $event, $records, $contexts, $progress);
+      ($pluginStep->handler)($step, $run);
+      $records = $run->apply($records);
       return;
     }
     throw new RuntimeException(sprintf('Unknown step "%s" - is its plugin active?', $type));
@@ -254,15 +275,19 @@ final class EventRunner
   /**
    * Test run of a plugin's step: its preview, otherwise its fields with the placeholders filled in.
    */
-  private function pluginPreview(array $step, array $event, array $records, array $contexts): mixed
+  private function pluginPreview(array $step, array $event, array &$records, array $contexts): mixed
   {
     $pluginStep = $this->plugins?->registry()->step((string)($step['type'] ?? ''));
     if (null === $pluginStep) {
       return null;
     }
     if (null !== $pluginStep->preview) {
-      return ($pluginStep->preview)($step, $this->pluginRun($pluginStep, $event, $records, $contexts, static function (): void {
-      }));
+      $run = $this->pluginRun($pluginStep, $event, $records, $contexts, static function (): void {
+      });
+      $result = ($pluginStep->preview)($step, $run);
+      // The next steps of the test run see what it passed on
+      $records = $run->apply($records);
+      return $result;
     }
     return array_map(static fn(array $ctx): array => Template::render(array_diff_key($step, ['type' => true]), $ctx), array_slice($contexts, 0, 3));
   }
@@ -317,6 +342,28 @@ final class EventRunner
   }
 
   /**
+   * The step "find": for every record of the run what matches "where" (drafts too, every field, as
+   * events see records) - the first one or null, with "all" a list of at most 100. Kept as "as".
+   *
+   * @return list<array> the records of the run
+   */
+  private function found(array $step, array $event, $project, array $records): array
+  {
+    $target = $this->entities->findBySlug((string)($step['entity'] ?? '')) ?? throw new RuntimeException(sprintf('There is no entity "%s".', (string)($step['entity'] ?? '')));
+    $all = (bool)($step['all'] ?? false);
+    foreach ($records as $i => $record) {
+      $where = (array)$this->fill($step['where'] ?? [], $this->context($event, $project, $record, count($records)));
+      if ([] === $where) {
+        throw new RuntimeException('"where" is missing - which records?');
+      }
+      $rows = $this->recordQuery->apply($this->records->query($target), $target, '', $where, 'id')->limit($all ? 100 : 1)->all();
+      $rows = null !== $this->presenter ? $this->presenter->withMedia($target, array_map(fn(array $row): array => $this->presenter->presentForAdmin($target, $row), $rows)) : $rows;
+      $records[$i]['vars'] = [(string)$step['as'] => $all ? $rows : ($rows[0] ?? null)] + (array)($record['vars'] ?? []);
+    }
+    return $records;
+  }
+
+  /**
    * Values of a step: the placeholders filled in, then the lookups resolved.
    *
    * @param array<string, mixed> $context
@@ -355,13 +402,14 @@ final class EventRunner
     foreach ($project->variables as $variable) {
       $variables[$variable['name']] = $project->variable($variable['name']);
     }
+    // Values passed on by earlier steps ({{names[0]}}) - the built-in placeholders win
     return [
       'record' => $record['data'] ?? [],
       'old' => $record['old'] ?? null,
       'event' => ['id' => (string)$event['id'], 'name' => (string)$event['name'], 'action' => $record['action'] ?? null, 'entity' => $record['entity'] ?? null],
       'project' => $variables + ['slug' => $project->slug, 'name' => $project->name],
       'count' => $count,
-    ];
+    ] + (array)($record['vars'] ?? []);
   }
 
   /**

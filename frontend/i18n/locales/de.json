@@ -276,7 +276,11 @@
       "noExecutable": "Noch kein Event zum Starten – lege eins mit der Quelle „Von anderen Events gestartet“ an.",
       "passData": "Zusätzliche Werte",
       "passDataHelp": "Werden jedem Datensatz hinzugefügt – im gestarteten Event als {'{{'}record.<name>{'}}'}. Die Platzhalter dieses Events funktionieren hier.",
-      "valueName": "name"
+      "valueName": "name",
+      "as": "Verfügbar als",
+      "asHelp": "Name des Platzhalters, z. B. author → {'{{'}author.name{'}}'} in den nächsten Schritten",
+      "findAll": "Alle, die passen",
+      "findAllHelp": "Eine Liste mit höchstens 100 – {'{{'}authors[0].name{'}}'}. Sonst der erste (leer, wenn keiner)."
     },
     "empty": "Noch keine Events.",
     "entity": "Entity",
@@ -324,7 +328,8 @@
       "email": "E-Mail",
       "update": "Ändern",
       "webhook": "Webhook",
-      "event": "Event starten"
+      "event": "Event starten",
+      "find": "Datensätze finden"
     },
     "stepsHelp": "Mehrere Schritte laufen nacheinander; der erste Fehler stoppt den Lauf.",
     "stepsLabel": "Schritte (JSON)",
